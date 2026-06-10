@@ -1,0 +1,203 @@
+import { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import { apiDelete, apiGet, apiPost } from "../../../shared/api/client.js";
+
+export function ResidentComplaintsPage() {
+  const [items, setItems] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [detailRow, setDetailRow] = useState(null);
+  const [form, setForm] = useState({ unitId: "", category: "", description: "" });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [cData, uData] = await Promise.all([
+        apiGet("/complaints?limit=100"),
+        apiGet("/my-units"),
+      ]);
+      setItems(cData.items ?? []);
+      setUnits(uData.items ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Load failed");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await apiPost("/complaints", form);
+      setOpen(false);
+      setForm({ unitId: "", category: "", description: "" });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Submit failed");
+    }
+  }
+
+  async function handleDelete(c) {
+    if (!window.confirm(`Delete ticket ${c.ticketId}?`)) return;
+    setError(null);
+    try {
+      await apiDelete(`/complaints/${c.id}`);
+      setDetailRow((row) => (row?.id === c.id ? null : row));
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Delete failed");
+    }
+  }
+
+  return (
+    <Stack spacing={2}>
+      <Typography variant="h6">Complaints</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Submit maintenance requests for one of your assigned units; track status updates from administration. You can
+        delete a ticket only while it is still Pending.
+      </Typography>
+      <Button variant="contained" onClick={() => setOpen(true)} sx={{ alignSelf: "flex-start" }}>
+        New complaint
+      </Button>
+      {error && (
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      <Typography variant="caption" color="text.secondary">
+        {loading ? "Loading…" : `${items.length} ticket(s)`}
+      </Typography>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Ticket</TableCell>
+            <TableCell>Unit</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {items.map((c) => (
+            <TableRow key={c.id}>
+              <TableCell>{c.ticketId}</TableCell>
+              <TableCell>{c.unit?.unitNumber ?? c.unitId}</TableCell>
+              <TableCell>{c.category}</TableCell>
+              <TableCell>{c.status}</TableCell>
+              <TableCell align="right">
+                <Button size="small" onClick={() => setDetailRow(c)} sx={{ mr: 0.5 }}>
+                  View
+                </Button>
+                <Button
+                  size="small"
+                  color="error"
+                  disabled={c.status !== "Pending"}
+                  onClick={() => handleDelete(c)}
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+          {!loading && items.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <Typography color="text.secondary">No complaints filed.</Typography>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+        <form onSubmit={handleSubmit}>
+          <DialogTitle>New complaint</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <TextField
+                select
+                required
+                label="Unit"
+                value={form.unitId}
+                onChange={(ev) => setForm((f) => ({ ...f, unitId: ev.target.value }))}
+              >
+                {units.map((u) => (
+                  <MenuItem key={u.id} value={u.id}>
+                    {u.unitNumber}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                required
+                label="Category"
+                value={form.category}
+                onChange={(ev) => setForm((f) => ({ ...f, category: ev.target.value }))}
+              />
+              <TextField
+                required
+                label="Description"
+                value={form.description}
+                onChange={(ev) => setForm((f) => ({ ...f, description: ev.target.value }))}
+                multiline
+                minRows={4}
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button type="button" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" disabled={units.length === 0}>
+              Submit
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <Dialog open={Boolean(detailRow)} onClose={() => setDetailRow(null)} fullWidth maxWidth="sm">
+        <DialogTitle>Complaint details</DialogTitle>
+        <DialogContent>
+          {detailRow && (
+            <Stack spacing={2} sx={{ mt: 0.5 }}>
+              <Typography variant="body2" color="text.secondary">
+                {detailRow.ticketId} · {detailRow.unit?.unitNumber ?? detailRow.unitId} · {detailRow.category} ·{" "}
+                {detailRow.status}
+              </Typography>
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                {detailRow.description}
+              </Typography>
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailRow(null)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </Stack>
+  );
+}

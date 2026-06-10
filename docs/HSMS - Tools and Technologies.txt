@@ -1,0 +1,11 @@
+Tools and Technologies
+
+Frontend Development:
+o HTML, CSS, JavaScript
+o React (for a modern, component-based framework)
+o Material UI (for responsive design and UI components)
+
+Backend Development: 
+o Node.js (for server-side logic and API development)
+o Express.js (for web frameworks)
+o MongoDB (for database management)

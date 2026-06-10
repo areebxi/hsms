@@ -1,0 +1,53 @@
+Functional and Non-Functional Requirements:
+Functional Requirements
+1.	Member and property management
+a)	Member registration: Allow administrators to add new residents, including personal details, unit numbers, and ownership status (owner or tenant).
+b)	Member directory: Maintain a searchable database of all residents with contact information, family details, and vehicle information.
+c)	Ownership and tenancy tracking: Keep a record of flat and plot ownership, along with the history of sales and transfers.
+d)	Unit management: Manage details of each unit, including its type (apartment, villa, plot), floor, and associated charges. 
+
+2.	Financial management and billing
+a)	Automated billing: Generate and send recurring maintenance and utility bills automatically to residents via email, SMS, or app notifications.
+b)	Online payments: Provide a secure payment gateway for residents to pay bills and fees using various methods (e.g., credit/debit card, net banking). No need to implement real-payment method. Use dummy number. 
+c)	Expense tracking: Record and categorize all society expenditures, such as staff salaries, repairs, and administrative costs.
+d)	Accounting and reports: Maintain proper financial accounts and generate transparent reports, such as balance sheets, income/expense reports, and defaulter lists. 
+
+3.	Communication and collaboration
+a)	Notice board: Publish important announcements, meeting schedules, and updates for all residents to see in real-time.
+b)	Complaint and suggestion box: Provide a system for residents to submit, track, and receive updates on maintenance requests and complaints.
+c)	Emergency alerts (SOS): Implement a feature for residents to trigger an immediate alert to security personnel or designated emergency contacts.
+d)	Polling: Enable online voting for important society matters or committee elections to boost resident participation.
+
+4.	Security and visitor management
+a)	Visitor entry and exit tracking: Log all visitor movements, with options for residents to pre-approve guests for faster entry.
+b)	Staff and vendor management: Track the attendance and entry of domestic staff (e.g., maids, drivers) and third-party vendors.
+c)	Gate management: Integrate with gate access control systems to control and monitor building entry and exit.
+d)	Security patrolling: Ensure security guards cover their patrol routes effectively. 
+
+5.	Amenity and inventory management
+a)	Facility booking: Allow residents to view availability and book common facilities like clubhouses, swimming pools, and sports courts.
+b)	Inventory management: Maintain and track society inventory and fixed assets.
+
+Non-Functional Requirements
+1.	Performance
+a)	App should load pages within 3–5 seconds.
+b)	Can support up to ~100 concurrent users comfortably (for FYP/demo purposes).
+
+2.	Security
+a)	Role-based login (Admin, Resident, Accountant, Security Guard).
+b)	Passwords stored securely (hashed).
+c)	HTTPS for data transmission.
+
+3.	Reliability
+a)	99% uptime.
+b)	Automatic session timeout should occur after a period of inactivity for security.
+
+4.	Usability Requirements
+a)	The user interface should be simple, intuitive, and easy to use for non-technical residents.
+b)	Mobile and desktop responsive.
+c)	Navigation be consistent, with clear labels and error messages.
+
+5.	Maintainability
+a)	Code organized in modules (React components + backend routes).
+b)	Clear comments in code for understanding and future modifications
+c)	Code documentation.

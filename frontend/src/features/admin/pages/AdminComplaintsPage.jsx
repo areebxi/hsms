@@ -1,0 +1,183 @@
+import { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import { apiDelete, apiGet, apiPatch } from "../../../shared/api/client.js";
+
+const STATUSES = ["Pending", "In Progress", "Resolved"];
+
+export function AdminComplaintsPage() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editRow, setEditRow] = useState(null);
+  const [statusDraft, setStatusDraft] = useState("Pending");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await apiGet("/complaints?limit=200");
+      setItems(data.items ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Load failed");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  function openEdit(c) {
+    setEditRow(c);
+    setStatusDraft(c.status ?? "Pending");
+  }
+
+  async function handleEditSave(e) {
+    e.preventDefault();
+    if (!editRow) return;
+    setError(null);
+    try {
+      await apiPatch(`/complaints/${editRow.id}`, { status: statusDraft });
+      setEditRow(null);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Update failed");
+    }
+  }
+
+  async function handleDelete(c) {
+    if (!window.confirm(`Delete complaint ${c.ticketId}? This cannot be undone.`)) return;
+    setError(null);
+    try {
+      await apiDelete(`/complaints/${c.id}`);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Delete failed");
+    }
+  }
+
+  return (
+    <Stack spacing={2}>
+      <Typography variant="h6">Complaints queue</Typography>
+      <Button variant="outlined" onClick={load} sx={{ alignSelf: "flex-start" }}>
+        Refresh
+      </Button>
+      {error && (
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      <Typography variant="caption" color="text.secondary">
+        {loading ? "Loading…" : `${items.length} complaint(s)`}
+      </Typography>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Ticket</TableCell>
+            <TableCell>Unit</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Resident</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {items.map((c) => (
+            <TableRow key={c.id}>
+              <TableCell>{c.ticketId}</TableCell>
+              <TableCell>{c.unit?.unitNumber ?? c.unitId}</TableCell>
+              <TableCell>{c.category}</TableCell>
+              <TableCell sx={{ maxWidth: 320, verticalAlign: "top" }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {c.description}
+                </Typography>
+              </TableCell>
+              <TableCell>{c.submitterName ?? c.submitterEmail ?? "—"}</TableCell>
+              <TableCell>{c.status}</TableCell>
+              <TableCell align="right">
+                <Button size="small" onClick={() => openEdit(c)}>
+                  Edit
+                </Button>
+                <Button size="small" color="error" sx={{ ml: 0.5 }} onClick={() => handleDelete(c)}>
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+          {!loading && items.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={7}>
+                <Typography color="text.secondary">No complaints.</Typography>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+        <form onSubmit={handleEditSave}>
+          <DialogTitle>Update complaint</DialogTitle>
+          <DialogContent>
+            {editRow && (
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {editRow.ticketId} · {editRow.unit?.unitNumber ?? editRow.unitId} · {editRow.category}
+                </Typography>
+                <Typography variant="body2">{editRow.description}</Typography>
+                <TextField
+                  select
+                  label="Status"
+                  value={statusDraft}
+                  onChange={(ev) => setStatusDraft(ev.target.value)}
+                >
+                  {STATUSES.map((s) => (
+                    <MenuItem key={s} value={s}>
+                      {s}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Stack>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button type="button" onClick={() => setEditRow(null)}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Stack>
+  );
+}

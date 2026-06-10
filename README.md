@@ -267,5 +267,3 @@ When a bill is created or bulk-generated, the backend calls `sendNotification` w
 | [`docs/TEST_TRACEABILITY.md`](docs/TEST_TRACEABILITY.md) | Test cases TC-01–TC-23 mapped to API routes and UI |
 | [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md) | Implementation log |
 | [`docs/`](docs/) | SRS, design diagrams, and requirement specifications |
-#   h s m s  
- 
