@@ -15,7 +15,8 @@ import inventoryExpensesRoutes from "./modules/inventoryExpenses/routes.js";
 
 const app = express();
 
-if (process.env.TRUST_PROXY === "1") {
+// Behind Render, Vercel proxy, nginx, etc. — required for express-rate-limit client IPs.
+if (process.env.TRUST_PROXY === "1" || process.env.RENDER === "true") {
   app.set("trust proxy", 1);
 }
 
