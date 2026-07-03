@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError } from "../../../shared/validation/pkPhone.js";
@@ -43,6 +44,7 @@ export function SecurityVisitorLogsPage() {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [unitsError, setUnitsError] = useState(null);
   const [open, setOpen] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
@@ -89,7 +91,7 @@ export function SecurityVisitorLogsPage() {
 
   async function handleEntry(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     const pe = optionalPhoneFieldError(form.phone);
     if (pe) {
       setPhoneError(pe);
@@ -111,7 +113,7 @@ export function SecurityVisitorLogsPage() {
       setPhoneError(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Entry failed");
+      setDialogError(e instanceof Error ? e.message : "Entry failed");
     }
   }
 
@@ -132,6 +134,7 @@ export function SecurityVisitorLogsPage() {
         variant="contained"
         onClick={() => {
           setPhoneError(null);
+          setDialogError(null);
           setOpen(true);
         }}
         sx={{ alignSelf: "flex-start" }}
@@ -191,6 +194,7 @@ export function SecurityVisitorLogsPage() {
         open={open}
         onClose={() => {
           setPhoneError(null);
+          setDialogError(null);
           setOpen(false);
         }}
         fullWidth
@@ -200,6 +204,7 @@ export function SecurityVisitorLogsPage() {
           <DialogTitle>Visitor entry</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Visitor name"
@@ -246,6 +251,7 @@ export function SecurityVisitorLogsPage() {
               type="button"
               onClick={() => {
                 setPhoneError(null);
+                setDialogError(null);
                 setOpen(false);
               }}
             >

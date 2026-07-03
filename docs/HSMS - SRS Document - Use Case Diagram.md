@@ -1,26 +1,30 @@
-Use Case Diagram:
+# Use Case Diagram
 
-Actors: Admin, Resident, Security Guard, Accountant
+**Actors:** Admin, Resident, Security Guard, Accountant
 
-1. Member & Property Management
+### 1. Member & Property Management
+
 - Register Member (Admin)
 - Manage Units (Admin)
 - View Member Directory (Admin)
 
-2. Financial Management
+### 2. Financial Management
+
 - Generate Bills (Admin, Accountant)
 - Pay Bills (Resident)
 - Expense Tracking (Admin, Accountant)
 - Generate Financial Reports (Admin, Accountant)
 
-3. Communication & Collaboration
+### 3. Communication & Collaboration
+
 - View Notice Board (Admin, Resident)
 - Submit Complaint (Resident)
 - Track Complaint Status (Resident)
 - SOS Alert (Resident)
 - Online Voting (Resident)
 
-4. Security & Visitor Management
+### 4. Security & Visitor Management
+
 - Log Visitor Entry/Exit (Security Guard)
 - Track Staff Attendance (Security Guard)
 - Manage Gate Access (Security Guard)
@@ -28,12 +32,14 @@ Actors: Admin, Resident, Security Guard, Accountant
 - Receive SOS Notification (Security Guard)
 - Pre-Approve Guest (Resident)
 
-5. Amenity & Inventory Management
+### 5. Amenity & Inventory Management
+
 - Facility Booking (Resident)
 - Manage Inventory (Admin)
 
-Relationships: 
-“Pay Bills” includes “Dummy Payment Processing” 
-“Generate Bills” includes “Calculate Charges” 
-“SOS Alert” includes “Notify Security Guard”
-“Track Complaint Status” extends “Submit Complaint”
+## Relationships
+
+- "Pay Bills" includes "Dummy Payment Processing"
+- "Generate Bills" includes "Calculate Charges"
+- "SOS Alert" includes "Notify Security Guard"
+- "Track Complaint Status" extends "Submit Complaint"

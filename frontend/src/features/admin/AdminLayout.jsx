@@ -5,7 +5,7 @@ const LINKS = [
   { to: "/admin", label: "Overview", end: true },
   { to: "/admin/members", label: "Members" },
   { to: "/admin/units", label: "Units" },
-  { to: "/admin/ownership", label: "Ownership" },
+  { to: "/admin/ownership", label: "Ownership & tenancy" },
   { to: "/admin/notices", label: "Notices" },
   { to: "/admin/complaints", label: "Complaints" },
   { to: "/admin/polls", label: "Polls" },

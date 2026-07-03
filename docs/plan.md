@@ -1,6 +1,6 @@
 # Housing Society Management System (HSMS) — Master Implementation Plan
 
-This document consolidates the project’s `.txt` specifications (introduction, scope, functional/non-functional requirements, tools, SRS usage scenarios, use-case diagram, design artifacts, database design, architecture, class/ER diagrams, sequence diagrams, and test cases) into a single implementation blueprint. Terminology and behaviors match those sources unless an explicit reconciliation note appears below.
+This document consolidates the project’s `HSMS - *.md` specification documents in `docs/` (introduction, scope, functional/non-functional requirements, tools, SRS usage scenarios, use-case diagram, design artifacts, database design, architecture, class/ER diagrams, sequence diagrams, and test cases) into a single implementation blueprint. Terminology and behaviors match those sources unless an explicit reconciliation note appears below.
 
 ---
 
@@ -143,7 +143,7 @@ Infrastructure assumptions: HTTPS in deployment; MongoDB connection string via e
 
 ## 8. Usage Scenarios — Traceability Index
 
-All **UC-01 … UC-23** from `SRS Document- Usage Scenarios` are in scope. Summary:
+All **UC-01 … UC-23** from [`HSMS - SRS Document - Usage Scenarios.md`](HSMS%20-%20SRS%20Document%20-%20Usage%20Scenarios.md) are in scope. Summary:
 
 | UC | Name | Primary Actor(s) |
 |----|------|------------------|
@@ -329,7 +329,7 @@ Key entities: `Unit`, `OwnershipRecord`, `Bill`, `Payment`, `Expense`, `Financia
 
 ## 12. Sequence Flows — Implementation Checklist
 
-For each UC in §8, implement the steps and exceptions documented in `Design Document - Sequence Diagrams.txt`. Highlights:
+For each UC in §8, implement the steps and exceptions documented in [`HSMS - Design Document - Sequence Diagrams.md`](HSMS%20-%20Design%20Document%20-%20Sequence%20Diagrams.md). Highlights:
 
 - **UC-04 Generate Bills:** Load units/residents → calculate charges → persist bills → trigger notification abstraction.
 - **UC-11 / UC-12:** Outstanding bills → dummy payment page → validate → update payment + bill status → confirm.
@@ -369,7 +369,7 @@ Enforce **role middleware** per route group matching §3.
 
 ## 15. Testing — Alignment with Test Cases
 
-Execute **TC-01 … TC-23** from `Design Document - Test Cases.txt` as acceptance criteria. Map each TC to the corresponding UC. Additional tests: unique vote, double-booking rejection, bill paid transition, SOS acknowledgment.
+Execute **TC-01 … TC-23** from [`HSMS - Design Document - Test Cases.md`](HSMS%20-%20Design%20Document%20-%20Test%20Cases.md) as acceptance criteria. Map each TC to the corresponding UC. Additional tests: unique vote, double-booking rejection, bill paid transition, SOS acknowledgment.
 
 ---
 
@@ -402,7 +402,7 @@ Execute **TC-01 … TC-23** from `Design Document - Test Cases.txt` as acceptanc
 
 ## 18. Documentation Reconciliation Notes
 
-These keep one coherent model across all `.txt` sources:
+These keep one coherent model across all `HSMS - *.md` specification sources:
 
 1. **Polls:** Database design lists polls/votes; ERD adds **`createdBy`** on polls — **retain `createdBy`**.
 2. **Expenses:** ERD **`description`** field — **retain**.

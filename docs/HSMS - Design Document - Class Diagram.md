@@ -1,52 +1,93 @@
-Class Diagram
+# Class Diagram
 
-1. Base & Actor Classes
-User (Abstract): userId, name, email, phone, passwordHash, role, familyDetails, vehicleInfo, status | login(), logout(), updateProfile()
-Admin (extends User): addMember(), manageUnits(), manageInventory(), publishNotice(), createPoll(), generateBills(), generateReports(), recordExpense()
+### 1. Base & Actor Classes
+
+User (Abstract): userId, name, email, phone, passwordHash, role, familyDetails, vehicleInfo, status
+
+```text
+   | login(), logout(), updateProfile()
+```
+
+Admin (extends User): addMember(), manageUnits(), manageInventory(), publishNotice(), createPoll(),
+
+generateBills(), generateReports(), recordExpense()
+
 Resident (extends User): submitComplaint(), payBill(), bookFacility(), vote(), sendSOS(), preApproveGuest()
+
 SecurityGuard (extends User): logVisitor(), markStaffAttendance(), manageGate(), respondToSOS(), logPatrol()
+
 Accountant (extends User): generateBills(), recordExpense(), generateFinancialReports()
 
-2. Property & History Classes
+### 2. Property & History Classes
+
 Unit: unitId, unitType, floor, monthlyCharges, status
+
 OwnershipRecord: recordId, ownershipType, startDate, endDate | trackHistory()
 
-3. Financial Classes
-Bill: billId, billType, amount, dueDate, status | generateBill(), updateStatus()
-Payment: paymentId, paymentDate, amount, status, transactionRef | processDummyPayment()
-Expense: expenseId, category, amount, date, recordedBy
-FinancialReport: reportId, type (Income | Expense | BalanceSheet | Defaulters), dateRangeStart, dateRangeEnd | generateReport()
+### 3. Financial Classes
 
-4. Security & Visitor Classes
+Bill: billId, billType, amount, dueDate, status | generateBill(), updateStatus()
+
+Payment: paymentId, paymentDate, amount, status, transactionRef | processDummyPayment()
+
+Expense: expenseId, category, amount, date, recordedBy
+
+FinancialReport: reportId, type (Income | Expense | BalanceSheet | Defaulters), dateRangeStart,
+
+dateRangeEnd | generateReport()
+
+### 4. Security & Visitor Classes
+
 Visitor: visitorId, name, phone, idProof
+
 VisitorLog: logId, visitorId, unitId, entryTime, exitTime, approvalId | logVisit()
+
 GuestApproval: approvalId, validDate, status | validateApproval()
+
 Staff: staffId, name, role, phone, assignedUnit
+
 StaffAttendance: attendanceId, staffId, entryTime, exitTime, recordedBy
+
 GateAccessLog: accessId, entityType, entityId, action, timestamp | logAccess()
+
 SOSAlert: alertId, triggeredBy, locationInfo, status, timestamp, emergencyContacts | triggerAlert()
+
 SOSResponse: responseId, alertId, guardId, acknowledgedAt | confirmResponse()
+
 PatrolLog: patrolId, routeId, timestamp | recordPatrol()
 
-5. Communication & Amenities Classes
+### 5. Communication & Amenities Classes
+
 Notice: noticeId, postedBy, title, description, priority, postedAt
+
 Complaint: complaintId, ticketId, description, status, unitId, submittedBy
+
 Poll: pollId, question, options, startDate, endDate, status | closePoll()
+
 Vote: voteId, selectedOption | castVote()
+
 FacilityBooking: bookingId, facilityId, bookedBy, date, startTime, endTime, status
+
 Facility: facilityId, name, type, capacity, status
+
 Inventory: itemId, itemName, quantity, condition, status, purchaseDate, lastUpdated
 
-Multiplicities & Relationships:
-Resident (M) — (1) Unit: Supports multiple residents per unit.
-Unit (1) — (M) OwnershipRecord: Tracks historical and current residency.
-Bill (1) — (0..1) Payment: Composition; payment requires a bill.
-Poll (1) — (M) Vote: One poll, many votes.
-SOSAlert (1) — (M) SOSResponse: One alert can involve multiple guard responses.
-Visitor (1) — (0..1) GuestApproval: Association for pre-approved entries.
+## Multiplicities & Relationships
 
-ASCII CLASS DIAGRAM
-This diagram uses UML notation to show Inheritance ( <|-- ) for roles and Associations ( --- ) with updated multiplicities and methods for polling, pre-approvals, and SOS handling.
+- Resident (M) — (1) Unit: Supports multiple residents per unit.
+- Unit (1) — (M) OwnershipRecord: Tracks historical and current residency.
+- Bill (1) — (0..1) Payment: Composition; payment requires a bill.
+- Poll (1) — (M) Vote: One poll, many votes.
+- SOSAlert (1) — (M) SOSResponse: One alert can involve multiple guard responses.
+- Visitor (1) — (0..1) GuestApproval: Association for pre-approved entries.
+
+## ASCII CLASS DIAGRAM
+
+This diagram uses UML notation to show Inheritance (<|--) for roles and Associations (---) with
+
+updated multiplicities and methods for polling, pre-approvals, and SOS handling.
+
+```text
                     +---------------------------+
                     |      User (Abstract)      |
                     |---------------------------|
@@ -54,8 +95,13 @@ This diagram uses UML notation to show Inheritance ( <|-- ) for roles and Associ
                     |---------------------------|
                     | login(), updateProfile()  |
                     +------------+--------------+
-                                 ^
-        _________________________|_________________________
+```
+
+^
+
+_________________________|_________________________
+
+```text
        |                |                  |               |
 +------------+   +------------+     +--------------+   +------------+
 |   Admin    |   |  Resident  |     | SecurityGuard|   | Accountant |
@@ -84,8 +130,11 @@ This diagram uses UML notation to show Inheritance ( <|-- ) for roles and Associ
                                     |--------------|   |------------|
                                     |acknowledgedAt|   |amount      |
                                     +--------------+   +------------+
+```
 
-      [OTHER CORE CLASSES]
+[OTHER CORE CLASSES]
+
+```text
 +------------+      1        M      +------------+
 |    Poll    | <------------------- |    Vote    |
 |------------|                      |------------|
@@ -93,9 +142,12 @@ This diagram uses UML notation to show Inheritance ( <|-- ) for roles and Associ
 |------------|                      |------------|
 |closePoll() |                      |castVote()  |
 +------------+                      +------------+
+```
 
+```text
 +------------+      1        M      +------------+
 |   Staff    | ------------------- | Attendance |
 |------------|                      |------------|
 |staffId,role|                      |entry, exit |
 +------------+                      +------------+
+```

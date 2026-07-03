@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { EXPENSE_CATEGORY_OPTIONS } from "../../../shared/constants/expenseCategories.js";
 
 function money(n) {
@@ -39,6 +40,7 @@ export function ExpensesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({
@@ -74,6 +76,7 @@ export function ExpensesPage() {
   }, [load]);
 
   function openCreate() {
+    setDialogError(null);
     setEditId(null);
     setForm({
       category: EXPENSE_CATEGORY_OPTIONS[0] ?? "",
@@ -85,6 +88,7 @@ export function ExpensesPage() {
   }
 
   function openEdit(row) {
+    setDialogError(null);
     setEditId(row.id);
     setForm({
       category: row.category ?? "",
@@ -97,7 +101,7 @@ export function ExpensesPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       const payload = {
         category: form.category,
@@ -113,7 +117,7 @@ export function ExpensesPage() {
       setOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setDialogError(e instanceof Error ? e.message : "Save failed");
     }
   }
 
@@ -189,11 +193,20 @@ export function ExpensesPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleSubmit}>
           <DialogTitle>{editId ? "Edit expense" : "Add expense"}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -232,7 +245,13 @@ export function ExpensesPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 
 function isoToDatetimeLocal(iso) {
@@ -34,6 +35,7 @@ export function AdminPollsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     question: "",
@@ -75,10 +77,10 @@ export function AdminPollsPage() {
       .map((s) => s.trim())
       .filter(Boolean);
     if (options.length < 2) {
-      setError("Enter at least two options (one per line).");
+      setDialogError("Enter at least two options (one per line).");
       return;
     }
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/polls", {
         question: form.question,
@@ -90,11 +92,12 @@ export function AdminPollsPage() {
       setForm({ question: "", optionsText: "Yes\nNo", startDate: "", endDate: "" });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
   function openEdit(p) {
+    setDialogError(null);
     setEditRow(p);
     setEditForm({
       question: p.question ?? "",
@@ -113,10 +116,10 @@ export function AdminPollsPage() {
       .map((s) => s.trim())
       .filter(Boolean);
     if (options.length < 2) {
-      setError("Enter at least two options (one per line).");
+      setDialogError("Enter at least two options (one per line).");
       return;
     }
-    setError(null);
+    setDialogError(null);
     try {
       await apiPatch(`/polls/${editRow.id}`, {
         question: editForm.question,
@@ -128,7 +131,7 @@ export function AdminPollsPage() {
       setEditRow(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
@@ -157,7 +160,14 @@ export function AdminPollsPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Polls & voting</Typography>
-      <Button variant="contained" onClick={() => setOpen(true)} sx={{ alignSelf: "flex-start" }}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setDialogError(null);
+          setOpen(true);
+        }}
+        sx={{ alignSelf: "flex-start" }}
+      >
         Create poll
       </Button>
       {error && (
@@ -210,11 +220,20 @@ export function AdminPollsPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleCreate}>
           <DialogTitle>New poll</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Question"
@@ -248,7 +267,13 @@ export function AdminPollsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">
@@ -258,11 +283,20 @@ export function AdminPollsPage() {
         </form>
       </Dialog>
 
-      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editRow)}
+        onClose={() => {
+          setDialogError(null);
+          setEditRow(null);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleEdit}>
           <DialogTitle>Edit poll</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Question"
@@ -305,7 +339,13 @@ export function AdminPollsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setEditRow(null)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setEditRow(null);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

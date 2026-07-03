@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 
 const STATUSES = ["Active", "Maintenance", "Closed"];
 
@@ -25,6 +26,7 @@ export function AdminFacilitiesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(null);
   const [form, setForm] = useState({
@@ -52,12 +54,14 @@ export function AdminFacilitiesPage() {
   }, [load]);
 
   function openCreate() {
+    setDialogError(null);
     setEdit(null);
     setForm({ name: "", type: "", capacity: "", status: "Active" });
     setOpen(true);
   }
 
   function openEdit(row) {
+    setDialogError(null);
     setEdit(row);
     setForm({
       name: row.name ?? "",
@@ -70,7 +74,7 @@ export function AdminFacilitiesPage() {
 
   async function handleSave(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       const payload = {
         name: form.name.trim(),
@@ -86,7 +90,7 @@ export function AdminFacilitiesPage() {
       setOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setDialogError(e instanceof Error ? e.message : "Save failed");
     }
   }
 
@@ -154,11 +158,20 @@ export function AdminFacilitiesPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleSave}>
           <DialogTitle>{edit ? "Edit facility" : "Add facility"}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Name"
@@ -182,7 +195,13 @@ export function AdminFacilitiesPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 
 function money(n) {
   if (typeof n !== "number") return "—";
@@ -47,6 +48,7 @@ export function FinanceBillsPage() {
   const [defaulters, setDefaulters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
 
   const [genOpen, setGenOpen] = useState(false);
   const [genForm, setGenForm] = useState({ billType: "Maintenance", dueDate: "" });
@@ -86,7 +88,7 @@ export function FinanceBillsPage() {
 
   async function handleGenerate(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/bills/generate", {
         billType: genForm.billType,
@@ -95,13 +97,13 @@ export function FinanceBillsPage() {
       setGenOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generate failed");
+      setDialogError(e instanceof Error ? e.message : "Generate failed");
     }
   }
 
   async function handleSingleCreate(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/bills", {
         unitId: singleForm.unitId,
@@ -112,7 +114,7 @@ export function FinanceBillsPage() {
       setSingleOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
@@ -128,10 +130,22 @@ export function FinanceBillsPage() {
       </Box>
 
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-        <Button variant="contained" onClick={() => setGenOpen(true)}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setDialogError(null);
+            setGenOpen(true);
+          }}
+        >
           Generate (occupied units)
         </Button>
-        <Button variant="outlined" onClick={() => setSingleOpen(true)}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setDialogError(null);
+            setSingleOpen(true);
+          }}
+        >
           Add single bill
         </Button>
         <Button variant="outlined" onClick={load}>
@@ -226,11 +240,20 @@ export function FinanceBillsPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={genOpen} onClose={() => setGenOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={genOpen}
+        onClose={() => {
+          setDialogError(null);
+          setGenOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleGenerate}>
           <DialogTitle>Generate bills for occupied units</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -259,7 +282,13 @@ export function FinanceBillsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setGenOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setGenOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">
@@ -269,11 +298,20 @@ export function FinanceBillsPage() {
         </form>
       </Dialog>
 
-      <Dialog open={singleOpen} onClose={() => setSingleOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={singleOpen}
+        onClose={() => {
+          setDialogError(null);
+          setSingleOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleSingleCreate}>
           <DialogTitle>Add bill for one unit</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -318,7 +356,13 @@ export function FinanceBillsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setSingleOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setSingleOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

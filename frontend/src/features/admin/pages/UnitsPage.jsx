@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 
 const UNIT_TYPES = ["Apartment", "Villa", "Plot"];
@@ -27,6 +28,7 @@ export function UnitsPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editRow, setEditRow] = useState(null);
@@ -61,7 +63,7 @@ export function UnitsPage() {
 
   async function handleCreate(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/units", {
         unitNumber: form.unitNumber,
@@ -74,14 +76,14 @@ export function UnitsPage() {
       setForm(emptyForm);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
-    setError(null);
+    setDialogError(null);
     try {
       await apiPatch(`/units/${editRow.id}`, {
         unitNumber: form.unitNumber,
@@ -94,11 +96,12 @@ export function UnitsPage() {
       setForm(emptyForm);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
   function openEdit(row) {
+    setDialogError(null);
     setEditRow(row);
     setForm({
       unitNumber: row.unitNumber ?? "",
@@ -134,7 +137,13 @@ export function UnitsPage() {
       </Typography>
 
       <Stack direction="row" spacing={1}>
-        <Button variant="contained" onClick={() => setCreateOpen(true)}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setDialogError(null);
+            setCreateOpen(true);
+          }}
+        >
           Add unit
         </Button>
       </Stack>
@@ -188,11 +197,20 @@ export function UnitsPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={createOpen}
+        onClose={() => {
+          setDialogError(null);
+          setCreateOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleCreate}>
           <DialogTitle>Add unit</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Unit number"
@@ -238,7 +256,13 @@ export function UnitsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setCreateOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setCreateOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">
@@ -248,11 +272,20 @@ export function UnitsPage() {
         </form>
       </Dialog>
 
-      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editRow)}
+        onClose={() => {
+          setDialogError(null);
+          setEditRow(null);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleEdit}>
           <DialogTitle>Edit unit</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Unit number"
@@ -298,7 +331,13 @@ export function UnitsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setEditRow(null)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setEditRow(null);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

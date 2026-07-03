@@ -17,11 +17,13 @@ import {
 } from "@mui/material";
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 
 export function AdminInventoryPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(null);
   const [searchDraft, setSearchDraft] = useState("");
@@ -54,6 +56,7 @@ export function AdminInventoryPage() {
   }, [load]);
 
   function openCreate() {
+    setDialogError(null);
     setEdit(null);
     setForm({
       itemName: "",
@@ -67,6 +70,7 @@ export function AdminInventoryPage() {
   }
 
   function openEdit(row) {
+    setDialogError(null);
     setEdit(row);
     const pd = row.purchaseDate ? String(row.purchaseDate).slice(0, 10) : "";
     setForm({
@@ -82,7 +86,7 @@ export function AdminInventoryPage() {
 
   async function handleSave(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       const payload = {
         itemName: form.itemName.trim(),
@@ -108,7 +112,7 @@ export function AdminInventoryPage() {
       setOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setDialogError(e instanceof Error ? e.message : "Save failed");
     }
   }
 
@@ -192,11 +196,20 @@ export function AdminInventoryPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleSave}>
           <DialogTitle>{edit ? "Edit item" : "Add item"}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Item name"
@@ -223,7 +236,13 @@ export function AdminInventoryPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

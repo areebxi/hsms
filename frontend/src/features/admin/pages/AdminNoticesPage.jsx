@@ -16,12 +16,14 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 
 export function AdminNoticesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", priority: "" });
 
@@ -47,7 +49,7 @@ export function AdminNoticesPage() {
 
   async function handleCreate(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/notices", {
         title: form.title,
@@ -58,11 +60,12 @@ export function AdminNoticesPage() {
       setForm({ title: "", description: "", priority: "" });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
   function openEdit(n) {
+    setDialogError(null);
     setEditRow(n);
     setEditForm({
       title: n.title ?? "",
@@ -74,7 +77,7 @@ export function AdminNoticesPage() {
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
-    setError(null);
+    setDialogError(null);
     try {
       const body = {
         title: editForm.title,
@@ -85,7 +88,7 @@ export function AdminNoticesPage() {
       setEditRow(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
@@ -102,7 +105,14 @@ export function AdminNoticesPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Notice board</Typography>
-      <Button variant="contained" onClick={() => setOpen(true)} sx={{ alignSelf: "flex-start" }}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setDialogError(null);
+          setOpen(true);
+        }}
+        sx={{ alignSelf: "flex-start" }}
+      >
         Publish notice
       </Button>
       {error && (
@@ -148,11 +158,20 @@ export function AdminNoticesPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleCreate}>
           <DialogTitle>New notice</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Title"
@@ -175,7 +194,13 @@ export function AdminNoticesPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">
@@ -185,11 +210,20 @@ export function AdminNoticesPage() {
         </form>
       </Dialog>
 
-      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editRow)}
+        onClose={() => {
+          setDialogError(null);
+          setEditRow(null);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleEdit}>
           <DialogTitle>Edit notice</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Title"
@@ -212,7 +246,13 @@ export function AdminNoticesPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setEditRow(null)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setEditRow(null);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import { apiDelete, apiGet, apiPatch } from "../../../shared/api/client.js";
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 
 const STATUSES = ["Pending", "In Progress", "Resolved"];
 
@@ -25,6 +26,7 @@ export function AdminComplaintsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [editRow, setEditRow] = useState(null);
   const [statusDraft, setStatusDraft] = useState("Pending");
 
@@ -46,6 +48,7 @@ export function AdminComplaintsPage() {
   }, [load]);
 
   function openEdit(c) {
+    setDialogError(null);
     setEditRow(c);
     setStatusDraft(c.status ?? "Pending");
   }
@@ -53,19 +56,18 @@ export function AdminComplaintsPage() {
   async function handleEditSave(e) {
     e.preventDefault();
     if (!editRow) return;
-    setError(null);
+    setDialogError(null);
     try {
       await apiPatch(`/complaints/${editRow.id}`, { status: statusDraft });
       setEditRow(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
   async function handleDelete(c) {
     if (!window.confirm(`Delete complaint ${c.ticketId}? This cannot be undone.`)) return;
-    setError(null);
     try {
       await apiDelete(`/complaints/${c.id}`);
       await load();
@@ -76,7 +78,7 @@ export function AdminComplaintsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Complaints queue</Typography>
+      <Typography variant="h6">Complaints</Typography>
       <Button variant="outlined" onClick={load} sx={{ alignSelf: "flex-start" }}>
         Refresh
       </Button>
@@ -143,12 +145,21 @@ export function AdminComplaintsPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editRow)}
+        onClose={() => {
+          setDialogError(null);
+          setEditRow(null);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleEditSave}>
           <DialogTitle>Update complaint</DialogTitle>
           <DialogContent>
             {editRow && (
               <Stack spacing={2} sx={{ mt: 1 }}>
+                <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
                 <Typography variant="body2" color="text.secondary">
                   {editRow.ticketId} · {editRow.unit?.unitNumber ?? editRow.unitId} · {editRow.category}
                 </Typography>
@@ -169,7 +180,13 @@ export function AdminComplaintsPage() {
             )}
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setEditRow(null)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setEditRow(null);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

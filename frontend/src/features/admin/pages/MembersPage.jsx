@@ -22,6 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
@@ -357,6 +358,7 @@ export function MembersPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editRow, setEditRow] = useState(null);
@@ -388,7 +390,11 @@ export function MembersPage() {
 
   async function handleCreate(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
+    if (form.password.length < 8) {
+      setDialogError("Initial password must be at least 8 characters.");
+      return;
+    }
     const pe = optionalPhoneFieldError(form.phone);
     if (pe) {
       setPhoneError(pe);
@@ -397,7 +403,7 @@ export function MembersPage() {
     setPhoneError(null);
     const extra = buildFamilyAndVehiclePayload(form);
     if ("error" in extra) {
-      setError(extra.error);
+      setDialogError(extra.error);
       return;
     }
     try {
@@ -415,15 +421,16 @@ export function MembersPage() {
       setForm(createEmptyForm());
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
+    setDialogError(null);
     if (form.password.length > 0 && form.password.length < 8) {
-      setError("New password must be at least 8 characters.");
+      setDialogError("New password must be at least 8 characters.");
       return;
     }
     const pe = optionalPhoneFieldError(form.phone);
@@ -432,10 +439,9 @@ export function MembersPage() {
       return;
     }
     setPhoneError(null);
-    setError(null);
     const extra = buildFamilyAndVehiclePayload(form);
     if ("error" in extra) {
-      setError(extra.error);
+      setDialogError(extra.error);
       return;
     }
     try {
@@ -456,12 +462,13 @@ export function MembersPage() {
       setForm(createEmptyForm());
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
   function openEdit(row) {
     setPhoneError(null);
+    setDialogError(null);
     setEditRow(row);
     setForm({
       name: row.name ?? "",
@@ -515,6 +522,7 @@ export function MembersPage() {
           variant="contained"
           onClick={() => {
             setPhoneError(null);
+            setDialogError(null);
             setForm(createEmptyForm());
             setCreateOpen(true);
           }}
@@ -586,6 +594,7 @@ export function MembersPage() {
         open={createOpen}
         onClose={() => {
           setPhoneError(null);
+          setDialogError(null);
           setCreateOpen(false);
         }}
         fullWidth
@@ -595,6 +604,7 @@ export function MembersPage() {
           <DialogTitle>Register member</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Full name"
@@ -658,6 +668,7 @@ export function MembersPage() {
               type="button"
               onClick={() => {
                 setPhoneError(null);
+                setDialogError(null);
                 setCreateOpen(false);
               }}
             >
@@ -674,6 +685,7 @@ export function MembersPage() {
         open={Boolean(editRow)}
         onClose={() => {
           setPhoneError(null);
+          setDialogError(null);
           setEditRow(null);
         }}
         fullWidth
@@ -683,6 +695,7 @@ export function MembersPage() {
           <DialogTitle>Edit member</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Full name"
@@ -745,6 +758,7 @@ export function MembersPage() {
               type="button"
               onClick={() => {
                 setPhoneError(null);
+                setDialogError(null);
                 setEditRow(null);
               }}
             >

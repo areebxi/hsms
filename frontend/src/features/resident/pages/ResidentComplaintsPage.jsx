@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPost } from "../../../shared/api/client.js";
 
 export function ResidentComplaintsPage() {
@@ -24,6 +25,7 @@ export function ResidentComplaintsPage() {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [detailRow, setDetailRow] = useState(null);
   const [form, setForm] = useState({ unitId: "", category: "", description: "" });
@@ -51,14 +53,14 @@ export function ResidentComplaintsPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/complaints", form);
       setOpen(false);
       setForm({ unitId: "", category: "", description: "" });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Submit failed");
+      setDialogError(e instanceof Error ? e.message : "Submit failed");
     }
   }
 
@@ -81,7 +83,14 @@ export function ResidentComplaintsPage() {
         Submit maintenance requests for one of your assigned units; track status updates from administration. You can
         delete a ticket only while it is still Pending.
       </Typography>
-      <Button variant="contained" onClick={() => setOpen(true)} sx={{ alignSelf: "flex-start" }}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setDialogError(null);
+          setOpen(true);
+        }}
+        sx={{ alignSelf: "flex-start" }}
+      >
         New complaint
       </Button>
       {error && (
@@ -134,11 +143,20 @@ export function ResidentComplaintsPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleSubmit}>
           <DialogTitle>New complaint</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -169,7 +187,13 @@ export function ResidentComplaintsPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained" disabled={units.length === 0}>

@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 
 export function SecurityStaffAttendancePage() {
@@ -24,6 +25,7 @@ export function SecurityStaffAttendancePage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [staffId, setStaffId] = useState("");
 
@@ -50,14 +52,14 @@ export function SecurityStaffAttendancePage() {
 
   async function handleCheckIn(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/staff-attendance", { staffId });
       setOpen(false);
       setStaffId("");
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Check-in failed");
+      setDialogError(e instanceof Error ? e.message : "Check-in failed");
     }
   }
 
@@ -79,7 +81,14 @@ export function SecurityStaffAttendancePage() {
       <Typography variant="body2" color="text.secondary">
         Staff profiles are managed by Admin. Check residents&apos; domestic staff / vendors in and out.
       </Typography>
-      <Button variant="contained" onClick={() => setOpen(true)} sx={{ alignSelf: "flex-start" }}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setDialogError(null);
+          setOpen(true);
+        }}
+        sx={{ alignSelf: "flex-start" }}
+      >
         Check in
       </Button>
       {error && (
@@ -126,28 +135,44 @@ export function SecurityStaffAttendancePage() {
         </TableBody>
       </Table>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs">
+      <Dialog
+        open={open}
+        onClose={() => {
+          setDialogError(null);
+          setOpen(false);
+        }}
+        fullWidth
+        maxWidth="xs"
+      >
         <form onSubmit={handleCheckIn}>
           <DialogTitle>Check in staff</DialogTitle>
           <DialogContent>
-            <TextField
-              select
-              required
-              fullWidth
-              sx={{ mt: 1 }}
-              label="Staff member"
-              value={staffId}
-              onChange={(ev) => setStaffId(ev.target.value)}
-            >
-              {staff.map((s) => (
-                <MenuItem key={s.id} value={s.id}>
-                  {s.name} ({s.role})
-                </MenuItem>
-              ))}
-            </TextField>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
+              <TextField
+                select
+                required
+                fullWidth
+                label="Staff member"
+                value={staffId}
+                onChange={(ev) => setStaffId(ev.target.value)}
+              >
+                {staff.map((s) => (
+                  <MenuItem key={s.id} value={s.id}>
+                    {s.name} ({s.role})
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained" disabled={staff.length === 0}>

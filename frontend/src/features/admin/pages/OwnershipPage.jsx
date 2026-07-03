@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
 
@@ -45,6 +46,7 @@ export function OwnershipPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [currentOnly, setCurrentOnly] = useState(true);
 
   const [units, setUnits] = useState([]);
@@ -109,10 +111,10 @@ export function OwnershipPage() {
   async function handleCreate(e) {
     e.preventDefault();
     if (!createForm.unitId || !createForm.userId || !createForm.startDate) {
-      setError("Unit, member, and start date are required.");
+      setDialogError("Unit, member, and start date are required.");
       return;
     }
-    setError(null);
+    setDialogError(null);
     try {
       const payload = {
         unitId: createForm.unitId,
@@ -135,17 +137,17 @@ export function OwnershipPage() {
       await loadRecords();
       await loadLists();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
+      setDialogError(e instanceof Error ? e.message : "Create failed");
     }
   }
 
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow || !editForm.unitId || !editForm.userId || !editForm.startDate) {
-      setError("Unit, member, and start date are required.");
+      setDialogError("Unit, member, and start date are required.");
       return;
     }
-    setError(null);
+    setDialogError(null);
     try {
       const payload = {
         unitId: editForm.unitId,
@@ -159,11 +161,12 @@ export function OwnershipPage() {
       await loadRecords();
       await loadLists();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      setDialogError(e instanceof Error ? e.message : "Update failed");
     }
   }
 
   function openEdit(row) {
+    setDialogError(null);
     setEditRow(row);
     setEditForm({
       unitId: row.unit?.id ?? row.unitId ?? "",
@@ -217,7 +220,13 @@ export function OwnershipPage() {
           }
           label="Current records only"
         />
-        <Button variant="contained" onClick={() => setCreateOpen(true)}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setDialogError(null);
+            setCreateOpen(true);
+          }}
+        >
           Add ownership record
         </Button>
       </Stack>
@@ -276,11 +285,20 @@ export function OwnershipPage() {
         </TableBody>
       </Table>
 
-      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={createOpen}
+        onClose={() => {
+          setDialogError(null);
+          setCreateOpen(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleCreate}>
           <DialogTitle>Ownership / tenancy</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -334,7 +352,13 @@ export function OwnershipPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setCreateOpen(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setCreateOpen(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">
@@ -344,11 +368,20 @@ export function OwnershipPage() {
         </form>
       </Dialog>
 
-      <Dialog open={Boolean(editRow)} onClose={() => setEditRow(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editRow)}
+        onClose={() => {
+          setDialogError(null);
+          setEditRow(null);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
         <form onSubmit={handleEdit}>
           <DialogTitle>Edit ownership record</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 select
                 required
@@ -402,7 +435,13 @@ export function OwnershipPage() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={() => setEditRow(null)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setDialogError(null);
+                setEditRow(null);
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="contained">

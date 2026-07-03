@@ -6,7 +6,7 @@
 
 ## 2026-05-09 — Planning document
 
-- **Goal:** Consolidate all specification `.txt` files into one implementation blueprint.
+- **Goal:** Consolidate all specification documents (`docs/HSMS - *.md`) into one implementation blueprint.
 - **Deliverable:** `plan.md` at repo root (428 lines).
 - **Sources merged:** Introduction/scope, functional & non-functional requirements, tools & technologies, SRS (usage scenarios UC-01–UC-23, use-case diagram), design docs (database, architecture, test cases, class diagram, ERD, sequence diagrams).
 - **Contents:** Vision/scope, stakeholders & roles (`SecurityGuard` vs UI “Security Guard”), full FR/NFR tables, stack (React, MUI, Node, Express, MongoDB), use-case relationships (includes/extends), modular architecture doctrine (“Perfectly Modular Systems”), MongoDB collections & reconciliation notes (e.g. `Poll.createdBy`, `Expense.description`), REST outline, security, testing alignment TC-01–TC-23, phased roadmap, traceability matrix.

@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
@@ -28,6 +29,7 @@ export function AdminStaffPage() {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
@@ -59,6 +61,7 @@ export function AdminStaffPage() {
   function openCreate() {
     setEdit(null);
     setPhoneError(null);
+    setDialogError(null);
     setForm({ name: "", role: "Other", phone: "", assignedUnitId: "" });
     setOpen(true);
   }
@@ -66,6 +69,7 @@ export function AdminStaffPage() {
   function openEdit(row) {
     setEdit(row);
     setPhoneError(null);
+    setDialogError(null);
     setForm({
       name: row.name ?? "",
       role: row.role ?? "Other",
@@ -77,7 +81,7 @@ export function AdminStaffPage() {
 
   async function handleSave(e) {
     e.preventDefault();
-    setError(null);
+    setDialogError(null);
     const pe = optionalPhoneFieldError(form.phone);
     if (pe) {
       setPhoneError(pe);
@@ -99,7 +103,7 @@ export function AdminStaffPage() {
       setOpen(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setDialogError(e instanceof Error ? e.message : "Save failed");
     }
   }
 
@@ -171,6 +175,7 @@ export function AdminStaffPage() {
         open={open}
         onClose={() => {
           setPhoneError(null);
+          setDialogError(null);
           setOpen(false);
         }}
         fullWidth
@@ -180,6 +185,7 @@ export function AdminStaffPage() {
           <DialogTitle>{edit ? "Edit staff" : "Add staff"}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <TextField
                 required
                 label="Name"
@@ -222,6 +228,7 @@ export function AdminStaffPage() {
               type="button"
               onClick={() => {
                 setPhoneError(null);
+                setDialogError(null);
                 setOpen(false);
               }}
             >

@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 
 function money(n) {
@@ -62,6 +63,7 @@ export function ResidentBillsPage() {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogError, setDialogError] = useState(null);
   const [payBill, setPayBill] = useState(null);
   const [cardDigits, setCardDigits] = useState("");
 
@@ -87,7 +89,7 @@ export function ResidentBillsPage() {
   async function submitPay(e) {
     e.preventDefault();
     if (!payBill || !cardNumberValid) return;
-    setError(null);
+    setDialogError(null);
     try {
       await apiPost("/payments/card", {
         billId: payBill.id,
@@ -97,7 +99,7 @@ export function ResidentBillsPage() {
       setCardDigits("");
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Payment failed");
+      setDialogError(e instanceof Error ? e.message : "Payment failed");
     }
   }
 
@@ -141,7 +143,14 @@ export function ResidentBillsPage() {
               <TableCell>{row.effectiveStatus ?? row.status}</TableCell>
               <TableCell align="right">
                 {row.status !== "Paid" ? (
-                  <Button size="small" variant="contained" onClick={() => setPayBill(row)}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={() => {
+                      setDialogError(null);
+                      setPayBill(row);
+                    }}
+                  >
                     Pay
                   </Button>
                 ) : (
@@ -163,6 +172,7 @@ export function ResidentBillsPage() {
       <Dialog
         open={Boolean(payBill)}
         onClose={() => {
+          setDialogError(null);
           setPayBill(null);
           setCardDigits("");
         }}
@@ -173,6 +183,7 @@ export function ResidentBillsPage() {
           <DialogTitle>Pay bill</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
               <Typography variant="body2">
                 Amount due: <strong>{payBill ? money(payBill.amount) : ""}</strong>
               </Typography>
@@ -198,6 +209,7 @@ export function ResidentBillsPage() {
             <Button
               type="button"
               onClick={() => {
+                setDialogError(null);
                 setPayBill(null);
                 setCardDigits("");
               }}
