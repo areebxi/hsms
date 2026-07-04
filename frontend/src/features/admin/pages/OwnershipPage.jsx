@@ -22,6 +22,7 @@ import {
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function formatDay(iso) {
   if (!iso) return "—";
@@ -207,7 +208,8 @@ export function OwnershipPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Ownership & tenancy</Typography>
       <Typography variant="body2" color="text.secondary">
-        Track owner vs tenant and dates. Current records have no end date; closing a record updates unit occupancy.
+        Record whether someone is an owner or tenant and for how long. Active records have no end date — close a record
+        when they move out.
       </Typography>
 
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
@@ -238,7 +240,7 @@ export function OwnershipPage() {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${total} record(s)`}
+        {loading ? "Loading…" : formatCount(total, "record")}
       </Typography>
 
       <Table size="small">

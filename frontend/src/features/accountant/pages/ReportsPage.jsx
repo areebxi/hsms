@@ -16,6 +16,7 @@ import {
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { ReportSnapshotView } from "./ReportSnapshotView.jsx";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function day(iso) {
   if (!iso) return "—";
@@ -112,7 +113,7 @@ export function ReportsPage() {
             </Button>
           </Stack>
           <Typography variant="caption" color="text.secondary">
-            Balance snapshot compares collections vs expenses in range and shows total unpaid bills.
+            The balance report compares money collected and spent in the selected period, plus unpaid bills.
           </Typography>
         </Stack>
       </Paper>
@@ -134,7 +135,7 @@ export function ReportsPage() {
 
       <Typography variant="subtitle2">Saved reports</Typography>
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${reports.length} recent`}
+        {loading ? "Loading…" : formatCount(reports.length, "saved report", "saved reports")}
       </Typography>
       <Table size="small">
         <TableHead>

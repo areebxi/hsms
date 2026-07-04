@@ -19,6 +19,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 const UNIT_TYPES = ["Apartment", "Villa", "Plot"];
 const OCCUPANCY = ["Occupied", "Vacant"];
@@ -133,7 +134,7 @@ export function UnitsPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Units</Typography>
       <Typography variant="body2" color="text.secondary">
-        Unit types, floors, and charges. Occupancy syncs from ownership records when applicable.
+        Manage unit details and monthly charges. Occupancy updates automatically from ownership records.
       </Typography>
 
       <Stack direction="row" spacing={1}>
@@ -155,7 +156,7 @@ export function UnitsPage() {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${total} unit(s)`}
+        {loading ? "Loading…" : formatCount(total, "unit")}
       </Typography>
 
       <Table size="small">

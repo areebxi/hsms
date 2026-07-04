@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentPollsPage() {
   const [polls, setPolls] = useState([]);
@@ -67,13 +68,16 @@ export function ResidentPollsPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Polls</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Vote on open society matters and see results when a poll closes.
+      </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${polls.length} poll(s)`}
+        {loading ? "Loading…" : formatCount(polls.length, "poll")}
       </Typography>
 
       <Stack spacing={2}>
@@ -135,12 +139,12 @@ export function ResidentPollsPage() {
             ) : (
               <Typography variant="body2" color="text.secondary">
                 {detail.votingOpen === false && detail.status === "Open"
-                  ? "Voting window is outside start/end dates."
+                  ? "Voting is not open yet, or the deadline has passed."
                   : detail.status === "Closed"
                     ? "Poll is closed."
                     : detail.myVote
-                      ? "You have already voted."
-                      : "Voting unavailable."}
+                      ? "You have already cast your vote."
+                      : "You cannot vote in this poll right now."}
               </Typography>
             )}
             <Button size="small" sx={{ mt: 2 }} onClick={() => setDetail(null)}>

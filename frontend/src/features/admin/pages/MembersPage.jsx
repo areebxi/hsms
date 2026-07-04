@@ -27,6 +27,7 @@ import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -149,8 +150,8 @@ function MemberFamilyVehicleSection({ form, setForm }) {
           Family in household
         </Typography>
         <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-          Optional. If you enter any detail for a person, name and relationship are required. Use 03XXXXXXXXX for
-          optional mobile numbers.
+          Optional. If you add someone, fill in their name and relationship. Mobile numbers are optional (11 digits,
+          starting with 03).
         </Typography>
         {members.map((m, i) => (
           <Stack
@@ -260,7 +261,7 @@ function MemberFamilyVehicleSection({ form, setForm }) {
           Vehicles
         </Typography>
         <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-          Optional. If you enter make or color, registration number is required for that row.
+          Optional. If you add a vehicle, the registration number is required.
         </Typography>
         {vehicles.map((veh, i) => (
           <Stack
@@ -500,7 +501,7 @@ export function MembersPage() {
           Members & directory
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Search by name, email, or phone. Register members with unit linkage via Ownership.
+          Search members by name, email, or phone. Link a member to a unit from Ownership & tenancy.
         </Typography>
       </Box>
 
@@ -538,7 +539,7 @@ export function MembersPage() {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${total} user(s)`}
+        {loading ? "Loading…" : formatCount(total, "member")}
       </Typography>
 
       <Card>
@@ -631,7 +632,7 @@ export function MembersPage() {
                 required
                 type="password"
                 label="Initial password"
-                helperText="Minimum 8 characters"
+                helperText="At least 8 characters"
                 value={form.password}
                 onChange={(ev) => setForm((f) => ({ ...f, password: ev.target.value }))}
               />
@@ -721,7 +722,7 @@ export function MembersPage() {
               <TextField
                 type="password"
                 label="New password"
-                helperText="Leave blank to keep current password"
+                helperText="Leave blank to keep the same password"
                 value={form.password}
                 onChange={(ev) => setForm((f) => ({ ...f, password: ev.target.value }))}
               />

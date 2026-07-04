@@ -46,7 +46,7 @@ export function LoginPage() {
           Housing Society Management System
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Sign in with your society account
+          Sign in with the email and password your society gave you
         </Typography>
       </Stack>
 

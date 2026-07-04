@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentSOSPage() {
   const [items, setItems] = useState([]);
@@ -57,7 +58,7 @@ export function ResidentSOSPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Emergency SOS</Typography>
       <Typography variant="body2" color="text.secondary">
-        Triggers an alert visible to security. Use only for drills or real emergencies per society policy.
+        Sends an immediate alert to security. Use this only for a real emergency or an authorised drill.
       </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
@@ -82,7 +83,7 @@ export function ResidentSOSPage() {
       </Card>
       <Typography variant="subtitle2">Your recent alerts</Typography>
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} record(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "alert")}
       </Typography>
       <Table size="small">
         <TableHead>

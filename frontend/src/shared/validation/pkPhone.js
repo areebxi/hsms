@@ -1,6 +1,6 @@
 export const PK_PHONE_REGEX = /^03\d{9}$/;
-export const PK_PHONE_MESSAGE = "Phone must be 11 digits starting with 03";
-export const PK_PHONE_HELPER_TEXT = "Optional. 11 digits starting with 03 (e.g. 03001234567).";
+export const PK_PHONE_MESSAGE = "Enter a valid mobile number (11 digits, starting with 03).";
+export const PK_PHONE_HELPER_TEXT = "Optional. Use 11 digits starting with 03, e.g. 03001234567.";
 
 export function sanitizePkPhoneInput(raw) {
   return String(raw ?? "")

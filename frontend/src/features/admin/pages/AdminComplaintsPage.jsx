@@ -19,6 +19,7 @@ import {
 
 import { apiDelete, apiGet, apiPatch } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
+import { formatCount } from "../../../shared/formatCount.js";
 
 const STATUSES = ["Pending", "In Progress", "Resolved"];
 
@@ -67,7 +68,7 @@ export function AdminComplaintsPage() {
   }
 
   async function handleDelete(c) {
-    if (!window.confirm(`Delete complaint ${c.ticketId}? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete submission ${c.ticketId}? This cannot be undone.`)) return;
     try {
       await apiDelete(`/complaints/${c.id}`);
       await load();
@@ -78,7 +79,10 @@ export function AdminComplaintsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Complaints</Typography>
+      <Typography variant="h6">Complaint & suggestion box</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Review resident complaints and suggestions, and update their status.
+      </Typography>
       <Button variant="outlined" onClick={load} sx={{ alignSelf: "flex-start" }}>
         Refresh
       </Button>
@@ -88,7 +92,7 @@ export function AdminComplaintsPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} complaint(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "submission")}
       </Typography>
       <Table size="small">
         <TableHead>
@@ -138,7 +142,7 @@ export function AdminComplaintsPage() {
           {!loading && items.length === 0 && (
             <TableRow>
               <TableCell colSpan={7}>
-                <Typography color="text.secondary">No complaints.</Typography>
+                <Typography color="text.secondary">No submissions yet.</Typography>
               </TableCell>
             </TableRow>
           )}
@@ -155,7 +159,7 @@ export function AdminComplaintsPage() {
         maxWidth="sm"
       >
         <form onSubmit={handleEditSave}>
-          <DialogTitle>Update complaint</DialogTitle>
+          <DialogTitle>Update submission</DialogTitle>
           <DialogContent>
             {editRow && (
               <Stack spacing={2} sx={{ mt: 1 }}>

@@ -2,11 +2,11 @@ import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const LINKS = [
-  { to: "/security/visitors", title: "Visitors & logs", desc: "Log entry and exit." },
-  { to: "/security/gate", title: "Gate access", desc: "Manual gate events and access records." },
-  { to: "/security/staff-attendance", title: "Staff attendance", desc: "Check-in / check-out." },
-  { to: "/security/sos", title: "SOS inbox", desc: "Acknowledge resident alerts." },
-  { to: "/security/patrols", title: "Patrols", desc: "Route checkpoints." },
+  { to: "/security/visitors", title: "Visitor logs", desc: "Record when visitors arrive and leave." },
+  { to: "/security/gate", title: "Gate access", desc: "Log who was allowed in or turned away at the gate." },
+  { to: "/security/staff-attendance", title: "Staff attendance", desc: "Check domestic staff and vendors in and out." },
+  { to: "/security/sos", title: "SOS alerts", desc: "View and acknowledge resident emergency alerts." },
+  { to: "/security/patrols", title: "Patrols", desc: "Log patrol routes and checkpoints." },
 ];
 
 export function SecurityHomePage() {
@@ -17,7 +17,7 @@ export function SecurityHomePage() {
           Overview
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Quick links for guard workflows and society coverage areas.
+          Log visitors, manage gate access, handle SOS alerts, and record patrols.
         </Typography>
       </Box>
 

@@ -7,7 +7,7 @@ const LINKS = [
   { to: "/admin/units", label: "Units" },
   { to: "/admin/ownership", label: "Ownership & tenancy" },
   { to: "/admin/notices", label: "Notices" },
-  { to: "/admin/complaints", label: "Complaints" },
+  { to: "/admin/complaints", label: "Complaint & suggestion box" },
   { to: "/admin/polls", label: "Polls" },
   { to: "/admin/staff", label: "Staff registry" },
   { to: "/admin/facilities", label: "Facilities" },
@@ -18,7 +18,7 @@ export function AdminLayout() {
   return (
     <PortalLayout
       title="Admin"
-      subtitle="Society administration and configuration"
+      subtitle="Manage members, units, notices, and society operations"
       links={LINKS}
     >
       <Outlet />

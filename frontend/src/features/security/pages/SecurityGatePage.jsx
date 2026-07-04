@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function SecurityGatePage() {
   const [logs, setLogs] = useState([]);
@@ -58,7 +59,7 @@ export function SecurityGatePage() {
     <Stack spacing={2}>
       <Typography variant="h6">Gate access</Typography>
       <Typography variant="body2" color="text.secondary">
-        Manual events persist to <code>gateAccessLogs</code> and call the gate adapter stub (see server console).
+        Record gate access manually when the automated system is not in use.
       </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
@@ -79,7 +80,7 @@ export function SecurityGatePage() {
         </TextField>
         <TextField
           required
-          label="Entity id"
+          label="Entity ID"
           value={form.entityId}
           onChange={(ev) => setForm((f) => ({ ...f, entityId: ev.target.value }))}
           sx={{ minWidth: 200 }}
@@ -99,14 +100,14 @@ export function SecurityGatePage() {
         </Button>
       </Stack>
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${logs.length} event(s)`}
+        {loading ? "Loading…" : formatCount(logs.length, "event")}
       </Typography>
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>Time</TableCell>
             <TableCell>Type</TableCell>
-            <TableCell>Entity id</TableCell>
+            <TableCell>Entity ID</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>

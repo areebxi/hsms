@@ -18,6 +18,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function AdminNoticesPage() {
   const [items, setItems] = useState([]);
@@ -105,6 +106,9 @@ export function AdminNoticesPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Notice board</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Post notices that appear on the resident notice board.
+      </Typography>
       <Button
         variant="contained"
         onClick={() => {
@@ -121,7 +125,7 @@ export function AdminNoticesPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} notice(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "notice")}
       </Typography>
       <Table size="small">
         <TableHead>

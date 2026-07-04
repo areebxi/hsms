@@ -107,9 +107,9 @@ export function ResidentBillsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">My bills</Typography>
+      <Typography variant="h6">Bills & payment</Typography>
       <Typography variant="body2" color="text.secondary">
-        Only bills for units you are assigned to (current ownership) appear here.
+        You will only see bills for units linked to your account.
       </Typography>
 
       {error && (
@@ -119,7 +119,7 @@ export function ResidentBillsPage() {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${unpaid.length} unpaid / ${bills.length} total`}
+        {loading ? "Loading…" : `${unpaid.length} unpaid · ${bills.length} total`}
       </Typography>
 
       <Table size="small">
@@ -162,7 +162,9 @@ export function ResidentBillsPage() {
           {!loading && bills.length === 0 && (
             <TableRow>
               <TableCell colSpan={6}>
-                <Typography color="text.secondary">No bills — ensure you have an active unit assignment.</Typography>
+                <Typography color="text.secondary">
+                  No bills yet. If you recently moved in, ask the admin to link your unit to your account.
+                </Typography>
               </TableCell>
             </TableRow>
           )}
@@ -201,7 +203,7 @@ export function ResidentBillsPage() {
                   autoComplete: "cc-number",
                   maxLength: 26,
                 }}
-                helperText="Enter the number as printed on your card (13–19 digits)."
+                helperText="Enter your card number as shown on the card."
               />
             </Stack>
           </DialogContent>

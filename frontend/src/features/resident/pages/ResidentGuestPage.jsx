@@ -21,6 +21,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError } from "../../../shared/validation/pkPhone.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentGuestPage() {
   const [items, setItems] = useState([]);
@@ -86,7 +87,7 @@ export function ResidentGuestPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Guest pre-approval</Typography>
       <Typography variant="body2" color="text.secondary">
-        Register an expected guest for security. Share the approval id with the guard if needed.
+        Register a guest before they arrive. Share the approval code with security at the gate if asked.
       </Typography>
       <Button
         variant="contained"
@@ -105,7 +106,7 @@ export function ResidentGuestPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} approval(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "approval")}
       </Typography>
       <Table size="small">
         <TableHead>
@@ -114,7 +115,7 @@ export function ResidentGuestPage() {
             <TableCell>Unit</TableCell>
             <TableCell>Valid date</TableCell>
             <TableCell>Status</TableCell>
-            <TableCell>Approval id</TableCell>
+            <TableCell>Approval ID</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

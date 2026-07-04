@@ -18,6 +18,7 @@ import {
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function AdminInventoryPage() {
   const [items, setItems] = useState([]);
@@ -130,7 +131,7 @@ export function AdminInventoryPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Inventory & fixed assets</Typography>
       <Typography variant="body2" color="text.secondary">
-        Track society assets; last updated on each save.
+        Keep track of society equipment and assets.
       </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap alignItems="center">
         <TextField
@@ -153,7 +154,7 @@ export function AdminInventoryPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} item(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "item")}
       </Typography>
       <Table size="small">
         <TableHead>

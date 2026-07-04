@@ -5,46 +5,46 @@ const LINKS = [
   {
     to: "/resident/bills",
     title: "Bills & payments",
-    desc: "View and pay outstanding bills.",
+    desc: "See your bills and pay online.",
   },
   {
     to: "/resident/notices",
     title: "Notice board",
-    desc: "Announcements and meetings.",
+    desc: "Society announcements, meetings, and updates.",
   },
   {
     to: "/resident/complaints",
-    title: "Complaints",
-    desc: "Submit and track tickets.",
+    title: "Complaint & suggestion box",
+    desc: "Report a problem or share a suggestion, then follow its progress.",
   },
   {
     to: "/resident/polls",
     title: "Polls",
-    desc: "Vote on society matters.",
+    desc: "Vote in society polls and elections.",
   },
   {
     to: "/resident/guests",
-    title: "Guest pre-approval",
-    desc: "Register expected visitors for the gate.",
+    title: "Guest approval",
+    desc: "Tell security who is visiting and when.",
   },
   {
     to: "/resident/sos",
     title: "Emergency SOS",
-    desc: "Alert security (use responsibly).",
+    desc: "Send an urgent alert to security.",
   },
   {
     to: "/resident/bookings",
     title: "Facility booking",
-    desc: "Book shared society amenities.",
+    desc: "Book the clubhouse, courts, pool, and other shared facilities.",
   },
 ];
 
 export function ResidentHomePage() {
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Welcome</Typography>
+      <Typography variant="h6">Overview</Typography>
       <Typography color="text.secondary" variant="body2">
-        Billing, announcements, maintenance, voting, visitors, safety, and amenities.
+        Pay bills, read notices, raise complaints, vote in polls, approve guests, and book facilities.
       </Typography>
       <Stack spacing={2}>
         {LINKS.map((a) => (

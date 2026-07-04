@@ -21,6 +21,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError } from "../../../shared/validation/pkPhone.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 const UNITS_PAGE_SIZE = 200;
 
@@ -130,6 +131,9 @@ export function SecurityVisitorLogsPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Visitor logs</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Log visitor entry and exit. Use a resident&apos;s approval code if the guest was pre-approved.
+      </Typography>
       <Button
         variant="contained"
         onClick={() => {
@@ -152,7 +156,7 @@ export function SecurityVisitorLogsPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${logs.length} log row(s)`}
+        {loading ? "Loading…" : formatCount(logs.length, "entry")}
       </Typography>
       <Table size="small">
         <TableHead>
@@ -242,7 +246,7 @@ export function SecurityVisitorLogsPage() {
                 label="Guest approval ID (optional)"
                 value={form.approvalId}
                 onChange={(ev) => setForm((f) => ({ ...f, approvalId: ev.target.value }))}
-                helperText="MongoDB id of guest approval if pre-approved"
+                helperText="Approval code from the resident (if the guest was pre-approved)"
               />
             </Stack>
           </DialogContent>

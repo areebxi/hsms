@@ -19,6 +19,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function isoToDatetimeLocal(iso) {
   if (!iso) return "";
@@ -160,6 +161,9 @@ export function AdminPollsPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Polls & voting</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Create polls and elections so residents can vote online.
+      </Typography>
       <Button
         variant="contained"
         onClick={() => {
@@ -176,7 +180,7 @@ export function AdminPollsPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} poll(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "poll")}
       </Typography>
       <Table size="small">
         <TableHead>

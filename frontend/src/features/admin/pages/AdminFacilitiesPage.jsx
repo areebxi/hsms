@@ -19,6 +19,7 @@ import {
 
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
+import { formatCount } from "../../../shared/formatCount.js";
 
 const STATUSES = ["Active", "Maintenance", "Closed"];
 
@@ -108,7 +109,7 @@ export function AdminFacilitiesPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Facilities</Typography>
       <Typography variant="body2" color="text.secondary">
-        Define shared amenities residents can book (clubhouse, courts, etc.).
+        Set up facilities residents can book, such as the clubhouse or sports courts.
       </Typography>
       <Button variant="contained" onClick={openCreate} sx={{ alignSelf: "flex-start" }}>
         Add facility
@@ -119,7 +120,7 @@ export function AdminFacilitiesPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} facility(ies)`}
+        {loading ? "Loading…" : formatCount(items.length, "facility", "facilities")}
       </Typography>
       <Table size="small">
         <TableHead>

@@ -20,6 +20,7 @@ import {
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { EXPENSE_CATEGORY_OPTIONS } from "../../../shared/constants/expenseCategories.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function money(n) {
   return typeof n === "number"
@@ -135,6 +136,9 @@ export function ExpensesPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Expenses</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Record society spending such as salaries, repairs, and admin costs.
+      </Typography>
       <Stack direction="row" spacing={1}>
         <Button variant="contained" onClick={openCreate}>
           Add expense
@@ -151,7 +155,7 @@ export function ExpensesPage() {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} record(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "expense")}
       </Typography>
 
       <Table size="small">

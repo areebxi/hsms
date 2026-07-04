@@ -2,26 +2,26 @@ import { Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const AREAS = [
-  { to: "/admin/members", title: "Members", desc: "Register residents, directory search, contact & vehicle details." },
-  { to: "/admin/units", title: "Units", desc: "Unit types, floors, monthly charges, occupancy status." },
-  { to: "/admin/ownership", title: "Ownership & tenancy", desc: "Link residents to units; history with start/end dates." },
-  { to: "/admin/notices", title: "Notices", desc: "Publish announcements and notices on the notice board." },
-  { to: "/admin/complaints", title: "Complaints", desc: "Track resident tickets and status." },
-  { to: "/admin/polls", title: "Polls", desc: "Create general polls or elections/votings/surveys." },
+  { to: "/admin/members", title: "Members", desc: "Add residents and search the member directory with contact and vehicle details." },
+  { to: "/admin/units", title: "Units", desc: "Set up flats and plots — type, floor, charges, and who lives there." },
+  { to: "/admin/ownership", title: "Ownership & tenancy", desc: "Record who owns or rents each unit, including past assignments." },
+  { to: "/admin/notices", title: "Notices", desc: "Post announcements and meeting updates for residents." },
+  { to: "/admin/complaints", title: "Complaint & suggestion box", desc: "Review complaints and suggestions from residents and update their status." },
+  { to: "/admin/polls", title: "Polls", desc: "Create polls and elections for society decisions." },
   {
     to: "/admin/staff",
     title: "Staff registry",
-    desc: "Maids, drivers, vendors — used by security attendance.",
+    desc: "Register domestic staff and vendors for gate check-in.",
   },
   {
     to: "/admin/facilities",
     title: "Facilities",
-    desc: "Define bookable amenities for residents.",
+    desc: "Set up facilities residents can book.",
   },
   {
     to: "/admin/inventory",
     title: "Inventory",
-    desc: "Society assets and fixed stock (quantity, condition, status).",
+    desc: "Track society equipment and assets.",
   },
 ];
 
@@ -30,7 +30,7 @@ export function AdminHomePage() {
     <Stack spacing={2}>
       <Typography variant="h6">Overview</Typography>
       <Typography color="text.secondary">
-        Members, units, ownership, society operations, and communication.
+        Register members, manage units and ownership, and run day-to-day society operations.
       </Typography>
       <Stack spacing={2}>
         {AREAS.map((a) => (

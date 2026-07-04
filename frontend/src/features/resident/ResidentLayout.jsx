@@ -3,9 +3,9 @@ import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 
 const LINKS = [
   { to: "/resident", label: "Overview", end: true },
-  { to: "/resident/bills", label: "Bills & pay" },
-  { to: "/resident/notices", label: "Notices" },
-  { to: "/resident/complaints", label: "Complaints" },
+  { to: "/resident/bills", label: "Bills & payment" },
+  { to: "/resident/notices", label: "Notice board" },
+  { to: "/resident/complaints", label: "Complaint & suggestion box" },
   { to: "/resident/polls", label: "Polls" },
   { to: "/resident/guests", label: "Guest approval" },
   { to: "/resident/sos", label: "Emergency SOS" },
@@ -14,7 +14,7 @@ const LINKS = [
 
 export function ResidentLayout() {
   return (
-    <PortalLayout title="Resident" subtitle="Your society account and services" links={LINKS}>
+    <PortalLayout title="Resident" subtitle="Bills, notices, complaints, and other resident services" links={LINKS}>
       <Outlet />
     </PortalLayout>
   );

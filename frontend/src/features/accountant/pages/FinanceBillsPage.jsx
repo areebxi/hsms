@@ -23,6 +23,7 @@ import {
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function money(n) {
   if (typeof n !== "number") return "—";
@@ -125,7 +126,7 @@ export function FinanceBillsPage() {
           Bills & defaulters
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Generate maintenance or utility bills, review overdue amounts, and track payment status.
+          Create maintenance and utility bills, and see what is overdue.
         </Typography>
       </Box>
 
@@ -165,7 +166,7 @@ export function FinanceBillsPage() {
             Defaulters (past due, unpaid)
           </Typography>
           <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-            {loading ? "Loading…" : `${defaulters.length} bill(s)`}
+            {loading ? "Loading…" : formatCount(defaulters.length, "overdue bill", "overdue bills")}
           </Typography>
           <TableContainer sx={{ mt: 1 }}>
             <Table size="small">
@@ -276,8 +277,8 @@ export function FinanceBillsPage() {
                 required
               />
               <Typography variant="caption" color="text.secondary">
-                Uses each occupied unit&apos;s monthlyCharges as amount. Skips duplicates for same unit, type, and due
-                date.
+                Creates one bill per occupied unit using its monthly charge. Duplicate bills for the same unit, type,
+                and due date are skipped.
               </Typography>
             </Stack>
           </DialogContent>

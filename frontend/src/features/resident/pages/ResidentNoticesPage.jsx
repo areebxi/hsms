@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 import { apiGet } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 function priorityChipProps(priority) {
   const p = String(priority || "").toLowerCase();
@@ -42,7 +43,7 @@ export function ResidentNoticesPage() {
           Notice board
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Official announcements and updates from the society administration.
+          Announcements and updates posted by the society office.
         </Typography>
       </Box>
 
@@ -52,7 +53,7 @@ export function ResidentNoticesPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} notice(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "notice")}
       </Typography>
       <Stack spacing={2}>
         {items.map((n) => (

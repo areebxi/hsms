@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function SecurityPatrolPage() {
   const [logs, setLogs] = useState([]);
@@ -55,21 +56,24 @@ export function SecurityPatrolPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Patrol checkpoints</Typography>
+      <Typography variant="h6">Security patrols</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Log each checkpoint as you complete your patrol route.
+      </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
       <Stack component="form" spacing={2} direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "flex-start" }} onSubmit={handleLog}>
-        <TextField label="Route id" value={routeId} onChange={(ev) => setRouteId(ev.target.value)} required />
+        <TextField label="Route ID" value={routeId} onChange={(ev) => setRouteId(ev.target.value)} required />
         <TextField label="Checkpoint (optional)" value={checkpointId} onChange={(ev) => setCheckpointId(ev.target.value)} />
         <Button type="submit" variant="contained">
           Log checkpoint
         </Button>
       </Stack>
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${logs.length} your patrol log(s)`}
+        {loading ? "Loading…" : formatCount(logs.length, "patrol entry", "patrol entries")}
       </Typography>
       <Table size="small">
         <TableHead>

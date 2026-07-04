@@ -3,9 +3,9 @@ import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 
 const LINKS = [
   { to: "/accountant", label: "Overview", end: true },
-  { to: "/accountant/bills", label: "Bills" },
+  { to: "/accountant/bills", label: "Bills & defaulters" },
   { to: "/accountant/expenses", label: "Expenses" },
-  { to: "/accountant/reports", label: "Reports" },
+  { to: "/accountant/reports", label: "Financial reports" },
 ];
 
 export function AccountantLayout() {

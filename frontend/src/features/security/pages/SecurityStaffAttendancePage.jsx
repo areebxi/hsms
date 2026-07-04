@@ -19,6 +19,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function SecurityStaffAttendancePage() {
   const [staff, setStaff] = useState([]);
@@ -79,7 +80,7 @@ export function SecurityStaffAttendancePage() {
     <Stack spacing={2}>
       <Typography variant="h6">Staff attendance</Typography>
       <Typography variant="body2" color="text.secondary">
-        Staff profiles are managed by Admin. Check residents&apos; domestic staff / vendors in and out.
+        Staff are registered by the admin. Check them in when they arrive and out when they leave.
       </Typography>
       <Button
         variant="contained"
@@ -97,7 +98,7 @@ export function SecurityStaffAttendancePage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${openRows.length} open visit(s)`}
+        {loading ? "Loading…" : formatCount(openRows.length, "staff member still inside", "staff members still inside")}
       </Typography>
       <Table size="small">
         <TableHead>

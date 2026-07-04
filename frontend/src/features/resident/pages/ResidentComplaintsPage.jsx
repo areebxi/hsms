@@ -19,6 +19,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentComplaintsPage() {
   const [items, setItems] = useState([]);
@@ -78,10 +79,10 @@ export function ResidentComplaintsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Complaints</Typography>
+      <Typography variant="h6">Complaint & suggestion box</Typography>
       <Typography variant="body2" color="text.secondary">
-        Submit maintenance requests for one of your assigned units; track status updates from administration. You can
-        delete a ticket only while it is still Pending.
+        Submit a complaint or suggestion for your unit and check its status here. You can remove it only while it is
+        still pending.
       </Typography>
       <Button
         variant="contained"
@@ -91,7 +92,7 @@ export function ResidentComplaintsPage() {
         }}
         sx={{ alignSelf: "flex-start" }}
       >
-        New complaint
+        New submission
       </Button>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
@@ -99,7 +100,7 @@ export function ResidentComplaintsPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} ticket(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "ticket")}
       </Typography>
       <Table size="small">
         <TableHead>
@@ -136,7 +137,7 @@ export function ResidentComplaintsPage() {
           {!loading && items.length === 0 && (
             <TableRow>
               <TableCell colSpan={5}>
-                <Typography color="text.secondary">No complaints filed.</Typography>
+                <Typography color="text.secondary">No submissions yet.</Typography>
               </TableCell>
             </TableRow>
           )}
@@ -153,7 +154,7 @@ export function ResidentComplaintsPage() {
         maxWidth="sm"
       >
         <form onSubmit={handleSubmit}>
-          <DialogTitle>New complaint</DialogTitle>
+          <DialogTitle>New submission</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
@@ -204,7 +205,7 @@ export function ResidentComplaintsPage() {
       </Dialog>
 
       <Dialog open={Boolean(detailRow)} onClose={() => setDetailRow(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Complaint details</DialogTitle>
+        <DialogTitle>Submission details</DialogTitle>
         <DialogContent>
           {detailRow && (
             <Stack spacing={2} sx={{ mt: 0.5 }}>

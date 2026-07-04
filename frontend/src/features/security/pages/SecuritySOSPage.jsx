@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function SecuritySOSPage() {
   const [items, setItems] = useState([]);
@@ -31,13 +32,16 @@ export function SecuritySOSPage() {
       await apiPost(`/sos/alerts/${id}/acknowledge`, {});
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ack failed");
+      setError(e instanceof Error ? e.message : "Acknowledgement failed");
     }
   }
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">SOS — open alerts</Typography>
+      <Typography variant="h6">SOS alerts</Typography>
+      <Typography variant="body2" color="text.secondary">
+        Open emergency alerts from residents. Acknowledge each one when you have responded.
+      </Typography>
       <Button variant="outlined" onClick={load} sx={{ alignSelf: "flex-start" }}>
         Refresh
       </Button>
@@ -47,7 +51,7 @@ export function SecuritySOSPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} open`}
+        {loading ? "Loading…" : formatCount(items.length, "open alert", "open alerts")}
       </Typography>
       <Table size="small">
         <TableHead>

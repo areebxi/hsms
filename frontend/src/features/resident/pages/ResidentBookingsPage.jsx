@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentBookingsPage() {
   const [facilities, setFacilities] = useState([]);
@@ -100,7 +101,7 @@ export function ResidentBookingsPage() {
     <Stack spacing={3}>
       <Typography variant="h6">Facility booking</Typography>
       <Typography variant="body2" color="text.secondary">
-        Book shared facilities; overlapping times are rejected by the server.
+        Book shared facilities. If a slot is already taken, choose a different time.
       </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>
@@ -154,7 +155,7 @@ export function ResidentBookingsPage() {
             />
             {occupied.length > 0 && (
               <Typography variant="caption" color="text.secondary">
-                Already booked that day:{" "}
+                Taken slots that day:{" "}
                 {occupied.map((s) => `${s.timeSlotStart}–${s.timeSlotEnd}`).join("; ")}
               </Typography>
             )}
@@ -167,7 +168,7 @@ export function ResidentBookingsPage() {
 
       <Typography variant="subtitle2">My bookings</Typography>
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${bookings.length} record(s)`}
+        {loading ? "Loading…" : formatCount(bookings.length, "booking")}
       </Typography>
       <Table size="small">
         <TableHead>

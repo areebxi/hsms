@@ -21,6 +21,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
+import { formatCount } from "../../../shared/formatCount.js";
 
 const ROLES = ["Maid", "Driver", "Vendor", "Other"];
 
@@ -121,7 +122,7 @@ export function AdminStaffPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Staff & vendors (registry)</Typography>
       <Typography variant="body2" color="text.secondary">
-        Used by security for attendance.
+        Staff listed here can be checked in at the gate.
       </Typography>
       <Button variant="contained" onClick={openCreate} sx={{ alignSelf: "flex-start" }}>
         Add staff
@@ -132,7 +133,7 @@ export function AdminStaffPage() {
         </Alert>
       )}
       <Typography variant="caption" color="text.secondary">
-        {loading ? "Loading…" : `${items.length} record(s)`}
+        {loading ? "Loading…" : formatCount(items.length, "staff member", "staff members")}
       </Typography>
       <Table size="small">
         <TableHead>
