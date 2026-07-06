@@ -16,11 +16,14 @@
 
 #### Admin Dashboard
 
-- User Management
+- Member Management
 - Unit Management
-- Billing & Reports
-- Inventory Management
+- Ownership & Tenancy
 - Notice Publishing
+- Polls
+- Staff Registry
+- Facilities
+- Inventory Management
 
 #### Resident Portal
 
