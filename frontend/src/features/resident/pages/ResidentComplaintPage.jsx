@@ -21,7 +21,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { apiDelete, apiGet, apiPost } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
-export function ResidentComplaintsPage() {
+export function ResidentComplaintPage() {
   const [items, setItems] = useState([]);
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);

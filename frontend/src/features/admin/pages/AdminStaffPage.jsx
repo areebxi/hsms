@@ -120,9 +120,9 @@ export function AdminStaffPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Staff & vendors (registry)</Typography>
+      <Typography variant="h6">Staff & vendors registry</Typography>
       <Typography variant="body2" color="text.secondary">
-        Staff listed here can be checked in at the gate.
+        Staff or vendors listed here can be checked in at the gate.
       </Typography>
       <Button variant="contained" onClick={openCreate} sx={{ alignSelf: "flex-start" }}>
         Add staff

@@ -67,9 +67,9 @@ export function ResidentPollsPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Polls</Typography>
+      <Typography variant="h6">Polls & voting</Typography>
       <Typography variant="body2" color="text.secondary">
-        Vote on open society matters and see results when a poll closes.
+        Vote on open society matters and elections and see results when a poll closes.
       </Typography>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>

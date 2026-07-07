@@ -23,7 +23,7 @@ import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError } from "../../../shared/validation/pkPhone.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
-export function ResidentGuestPage() {
+export function ResidentGuestApprovalPage() {
   const [items, setItems] = useState([]);
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +85,7 @@ export function ResidentGuestPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Guest pre-approval</Typography>
+      <Typography variant="h6">Guest approval</Typography>
       <Typography variant="body2" color="text.secondary">
         Register a guest before they arrive. Share the approval code with security at the gate if asked.
       </Typography>

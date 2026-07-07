@@ -129,9 +129,9 @@ export function AdminInventoryPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Inventory & fixed assets</Typography>
+      <Typography variant="h6">Inventory</Typography>
       <Typography variant="body2" color="text.secondary">
-        Keep track of society equipment and assets.
+        Keep track of society equipment and fixed assets.
       </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap alignItems="center">
         <TextField

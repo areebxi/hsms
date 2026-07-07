@@ -18,7 +18,7 @@ import {
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
-export function ResidentBookingsPage() {
+export function ResidentFacilityPage() {
   const [facilities, setFacilities] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [occupied, setOccupied] = useState([]);

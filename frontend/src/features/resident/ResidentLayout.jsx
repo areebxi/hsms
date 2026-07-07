@@ -6,7 +6,7 @@ const LINKS = [
   { to: "/resident/bills", label: "Bills & payment" },
   { to: "/resident/notices", label: "Notice board" },
   { to: "/resident/complaints", label: "Complaint & suggestion box" },
-  { to: "/resident/polls", label: "Polls" },
+  { to: "/resident/polls", label: "Polls & voting" },
   { to: "/resident/guests", label: "Guest approval" },
   { to: "/resident/sos", label: "Emergency SOS" },
   { to: "/resident/bookings", label: "Facility booking" },

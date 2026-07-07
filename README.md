@@ -263,7 +263,9 @@ When a bill is created or bulk-generated, the backend calls `sendNotification` w
 
 | Document | Description |
 |----------|-------------|
+| [`docs/README.md`](docs/README.md) | **Documentation index** — start here for all project docs |
 | [`docs/plan.md`](docs/plan.md) | Master implementation plan and architecture |
+| [`docs/API.md`](docs/API.md) | REST API reference (`/api/v1`) |
 | [`docs/TEST_TRACEABILITY.md`](docs/TEST_TRACEABILITY.md) | Test cases TC-01–TC-23 mapped to API routes and UI |
 | [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md) | Implementation log |
 | [`docs/`](docs/) | SRS, design diagrams, and requirement specifications |

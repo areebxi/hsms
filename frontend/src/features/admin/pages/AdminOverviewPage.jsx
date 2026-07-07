@@ -5,12 +5,12 @@ const AREAS = [
   { to: "/admin/members", title: "Members & directory", desc: "Add residents and search the member directory with contact and vehicle details." },
   { to: "/admin/units", title: "Units", desc: "Set up flats and plots — type, floor, charges, and who lives there." },
   { to: "/admin/ownership", title: "Ownership & tenancy", desc: "Record who owns or rents each unit, including past assignments." },
-  { to: "/admin/notices", title: "Notices", desc: "Post announcements and meeting updates for residents." },
+  { to: "/admin/notices", title: "Notice board", desc: "Post announcements and meeting updates for residents." },
   { to: "/admin/complaints", title: "Complaint & suggestion box", desc: "Review complaints and suggestions from residents and update their status." },
-  { to: "/admin/polls", title: "Polls", desc: "Create polls and elections for society decisions." },
+  { to: "/admin/polls", title: "Polls & voting", desc: "Create polls and elections for society decisions." },
   {
     to: "/admin/staff",
-    title: "Staff registry",
+    title: "Staff & vendors registry",
     desc: "Register domestic staff and vendors for gate check-in.",
   },
   {
@@ -21,7 +21,7 @@ const AREAS = [
   {
     to: "/admin/inventory",
     title: "Inventory",
-    desc: "Track society equipment and assets.",
+    desc: "Track society equipment and fixed assets.",
   },
 ];
 

@@ -95,20 +95,20 @@
 
 - **Backend (`complaintsCommunication`):** `communication.service.js` / `communication.validation.js` / `routes.js` — **Notices:** CRUD-style (`GET/POST /notices`, `GET/PATCH/DELETE /notices/:noticeId`) Admin writes; all authenticated read. **Complaints:** `POST /complaints` (Resident only; unit must be in current ownership via `getCurrentUnitIdsForUser`); `GET /complaints` (Resident = own; Admin = all); `PATCH /complaints/:complaintId` status (Admin); unique `ticketId` (`TKT-…`). **Polls:** `POST /polls` (Admin); `GET /polls` (`?status=Open|Closed|all`); `GET /polls/:pollId` returns tallies, `myVote`, `canVote`; `PATCH /polls/:pollId`. **Votes:** `POST /votes` (Resident); one vote per poll; validates option ∈ poll.options and voting window.
 - **Residents — unit picklist:** `GET /my-units` (Resident) on **`membersUnits`** → `listResidentUnits()` for complaint UI.
-- **Frontend:** Admin — `AdminNoticesPage`, `AdminComplaintsPage`, `AdminPollsPage`; Resident — `ResidentNoticesPage`, `ResidentComplaintsPage`, `ResidentPollsPage`; layouts & home cards updated; routes wired in `App.jsx`.
+- **Frontend:** Admin — `AdminNoticesPage`, `AdminComplaintPage`, `AdminPollsPage`; Resident — `ResidentNoticesPage`, `ResidentComplaintPage`, `ResidentPollsPage`; layouts & home cards updated; routes wired in `App.jsx`.
 - **Verify:** `npm run build -w frontend` OK.
 
 ## 2026-05-10 — Phase 5: Security (visitors, gate, staff, SOS, patrols)
 
 - **Backend (`securityVisitors`):** Validation + service + routes — visitors; guest approvals (`GET` any auth with resident-scoped list; `POST` Resident); visitor logs with inline visitor + exit patch; gate access logs + `gateAccessAdapter.recordGateEvent`; staff (`GET` Admin/Security; `POST/PATCH/DELETE` Admin); staff attendance check-in/out + gate event on checkout; SOS (`GET` Resident/Security/Admin; `POST` Resident; `POST …/acknowledge` Security/Admin); patrols (`GET/POST` Security/Admin). **`membersUnits`:** `GET /units` readable by **SecurityGuard** for visitor logging picklists.
-- **Frontend:** Nested **`/security`** under `SecurityLayout` — `SecurityOverviewPage`, `SecurityVisitorLogsPage`, `SecurityGatePage`, `SecurityStaffAttendancePage`, `SecuritySOSPage`, `SecurityPatrolPage`. **`ROLE_GROUPS.securityPortal`** includes **Admin** + **SecurityGuard** (matches API). Resident — **`ResidentGuestPage`**, **`ResidentSOSPage`** (`/resident/guests`, `/resident/sos`). Admin — **`AdminStaffPage`** (`/admin/staff`). Removed legacy `SecurityPanelPage.jsx`.
+- **Frontend:** Nested **`/security`** under `SecurityLayout` — `SecurityOverviewPage`, `SecurityVisitorLogsPage`, `SecurityGatePage`, `SecurityStaffAttendancePage`, `SecuritySOSPage`, `SecurityPatrolPage`. **`ROLE_GROUPS.securityPortal`** includes **Admin** + **SecurityGuard** (matches API). Resident — **`ResidentGuestApprovalPage`**, **`ResidentSOSPage`** (`/resident/guests`, `/resident/sos`). Admin — **`AdminStaffPage`** (`/admin/staff`). Removed legacy `SecurityPanelPage.jsx`.
 - **Verify:** `npm run build -w frontend` OK.
 
 ## 2026-05-10 — Phase 6: Amenities (facilities & bookings)
 
 - **Backend (`inventoryExpenses`):** `facilitiesBookings.validation.js` + `facilitiesBookings.service.js` — facilities CRUD (Admin); list facilities (Residents see **Active** only; optional `?status=` for other roles); bookings (`GET`: Resident = own; Admin/Accountant = all); Resident **`POST /bookings`** with same-day overlap rejection (`409`); **`PATCH /bookings/:id`** cancel (owner or Admin); **`GET /facilities/:facilityId/slots?date=`** returns occupied intervals (no PII). **`Facility`** schema default **`status: Active`**.
 - **Routes:** Real `/facilities` + `/bookings` in `routes.js`; inventory implemented in Phase 7.
-- **Frontend:** **`AdminFacilitiesPage`** (`/admin/facilities`), **`ResidentBookingsPage`** (`/resident/bookings`); nav + home cards + **`App.jsx`** routes.
+- **Frontend:** **`AdminFacilitiesPage`** (`/admin/facilities`), **`ResidentFacilityPage`** (`/resident/bookings`); nav + home cards + **`App.jsx`** routes.
 - **Verify:** `npm run build -w frontend` OK.
 
 ## 2026-05-10 — Phase 7: Inventory CRUD
@@ -159,10 +159,29 @@
 - **`complaintsCommunication` (`backend/src/modules/complaintsCommunication/`):**
   - **`DELETE /polls/:pollId`** — `deletePoll()` removes votes then poll (`communication.service.js`); route `adminOnly`.
   - **`DELETE /complaints/:complaintId`** — `deleteComplaint()` — Admin: any; Resident: own only and **`status === "Pending"`**; route **`anyAuth`** (`communication.routes.js`).
-- **Frontend (admin):** `MembersPage.jsx` — Delete; `OwnershipPage.jsx` — Edit (unit, member, type, dates) + Delete + End tenancy; `AdminNoticesPage.jsx` — Edit dialog + existing Delete; `AdminPollsPage.jsx` — Edit + Delete + Close; `AdminComplaintsPage.jsx` — Edit dialog (status) + Delete (replaces inline status-only control).
-- **Frontend (resident):** `ResidentComplaintsPage.jsx` — Delete for **Pending** only + helper copy.
+- **Frontend (admin):** `MembersPage.jsx` — Delete; `OwnershipPage.jsx` — Edit (unit, member, type, dates) + Delete + End tenancy; `AdminNoticesPage.jsx` — Edit dialog + existing Delete; `AdminPollsPage.jsx` — Edit + Delete + Close; `AdminComplaintPage.jsx` — Edit dialog (status) + Delete (replaces inline status-only control).
+- **Frontend (resident):** `ResidentComplaintPage.jsx` — Delete for **Pending** only + helper copy.
 - **Verify:** `node --check` on touched backend files; `npm run build` in **`frontend/`** OK.
 
 ## 2026-07-07 — Portal overview pages renamed (`*HomePage` → `*OverviewPage`)
 
 - **Frontend:** Renamed portal landing pages to match nav label **Overview** in each `*Layout`: `AdminHomePage` → **`AdminOverviewPage`**, `AccountantHomePage` → **`AccountantOverviewPage`**, `ResidentHomePage` → **`ResidentOverviewPage`**, `SecurityHomePage` → **`SecurityOverviewPage`**. Files under `frontend/src/features/{admin,accountant,resident,security}/pages/`; exports and **`App.jsx`** index-route imports updated. Route paths unchanged (`/admin`, `/accountant`, `/resident`, `/security`).
+
+## 2026-07-07 — Resident guest page renamed (`ResidentGuestPage` → `ResidentGuestApprovalPage`)
+
+- **Frontend:** `ResidentGuestPage.jsx` → **`ResidentGuestApprovalPage.jsx`**; export and **`App.jsx`** import/route updated. Route path unchanged (`/resident/guests`). Aligns with nav label **Guest approval**.
+
+## 2026-07-07 — Resident facility page renamed (`ResidentBookingsPage` → `ResidentFacilityPage`)
+
+- **Frontend:** `ResidentBookingsPage.jsx` → **`ResidentFacilityPage.jsx`**; export and **`App.jsx`** import/route updated. Route path unchanged (`/resident/bookings`).
+
+## 2026-07-07 — Complaint pages renamed (`*ComplaintsPage` → `*ComplaintPage`)
+
+- **Frontend:** `AdminComplaintsPage.jsx` → **`AdminComplaintPage.jsx`**, `ResidentComplaintsPage.jsx` → **`ResidentComplaintPage.jsx`**; exports and **`App.jsx`** imports/routes updated. Route paths unchanged (`/admin/complaints`, `/resident/complaints`).
+
+## 2026-07-07 — Project documentation index and API reference
+
+- **New:** **`docs/README.md`** — central documentation hub (spec docs, module map, route map, reading order).
+- **New:** **`docs/TEST_TRACEABILITY.md`** — TC-01…TC-23 ↔ UC, FR, API, UI (referenced in root README since Phase 8; file was missing).
+- **New:** **`docs/API.md`** — full REST reference for `/api/v1` endpoints and roles.
+- **Updated:** Root **`README.md`** — documentation table links to docs index and API reference.

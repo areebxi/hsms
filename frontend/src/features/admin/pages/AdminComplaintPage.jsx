@@ -23,7 +23,7 @@ import { formatCount } from "../../../shared/formatCount.js";
 
 const STATUSES = ["Pending", "In Progress", "Resolved"];
 
-export function AdminComplaintsPage() {
+export function AdminComplaintPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

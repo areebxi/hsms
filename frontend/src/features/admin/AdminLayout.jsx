@@ -6,10 +6,10 @@ const LINKS = [
   { to: "/admin/members", label: "Members & directory" },
   { to: "/admin/units", label: "Units" },
   { to: "/admin/ownership", label: "Ownership & tenancy" },
-  { to: "/admin/notices", label: "Notices" },
+  { to: "/admin/notices", label: "Notice board" },
   { to: "/admin/complaints", label: "Complaint & suggestion box" },
-  { to: "/admin/polls", label: "Polls" },
-  { to: "/admin/staff", label: "Staff registry" },
+  { to: "/admin/polls", label: "Polls & voting" },
+  { to: "/admin/staff", label: "Staff & vendors registry" },
   { to: "/admin/facilities", label: "Facilities" },
   { to: "/admin/inventory", label: "Inventory" },
 ];
