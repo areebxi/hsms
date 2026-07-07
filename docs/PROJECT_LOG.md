@@ -80,7 +80,7 @@
 
 - **API (`membersUnits`):** Full CRUD-style REST for Admin — `GET/POST /users`, `GET/PATCH /users/:userId` (directory search `?q=`, optional `role`/`status`); `GET/POST /units`, `GET/PATCH/DELETE /units/:unitId` (delete only if no ownership rows); `GET/POST /ownership-records`, `GET/PATCH /ownership-records/:id` (filter `?currentOnly=true`, `unitId`, `userId`). Service: `membersUnits.service.js` (bcrypt on user create/patch password, unit occupancy sync from active `endDate: null` records, `HttpError` for conflicts). Validation: `membersUnits.validation.js` (Zod). `errorHandler` also maps Mongoose `CastError` → 400.
 - **Middleware:** `asyncHandler` for async routes.
-- **Frontend:** `RequireRole` + nested `/admin` routes — `AdminLayout` (nav), `AdminHomePage`, `MembersPage` (search, register, edit), `UnitsPage` (CRUD, delete with rules), `OwnershipPage` (list, add, end tenancy). `apiPatch` / `apiDelete` in `shared/api/client.js`. Removed placeholder `AdminDashboardPage.jsx` (replaced by layout + home).
+- **Frontend:** `RequireRole` + nested `/admin` routes — `AdminLayout` (nav), `AdminOverviewPage`, `MembersPage` (search, register, edit), `UnitsPage` (CRUD, delete with rules), `OwnershipPage` (list, add, end tenancy). `apiPatch` / `apiDelete` in `shared/api/client.js`. Removed placeholder `AdminDashboardPage.jsx` (replaced by layout + overview).
 - **README:** layout table — `backend/src/models/*` row; features line mentions `admin/*`.
 
 ## 2026-05-10 — Phase 3: Finance (billing, dummy pay, expenses, reports)
@@ -101,7 +101,7 @@
 ## 2026-05-10 — Phase 5: Security (visitors, gate, staff, SOS, patrols)
 
 - **Backend (`securityVisitors`):** Validation + service + routes — visitors; guest approvals (`GET` any auth with resident-scoped list; `POST` Resident); visitor logs with inline visitor + exit patch; gate access logs + `gateAccessAdapter.recordGateEvent`; staff (`GET` Admin/Security; `POST/PATCH/DELETE` Admin); staff attendance check-in/out + gate event on checkout; SOS (`GET` Resident/Security/Admin; `POST` Resident; `POST …/acknowledge` Security/Admin); patrols (`GET/POST` Security/Admin). **`membersUnits`:** `GET /units` readable by **SecurityGuard** for visitor logging picklists.
-- **Frontend:** Nested **`/security`** under `SecurityLayout` — `SecurityHomePage`, `SecurityVisitorLogsPage`, `SecurityGatePage`, `SecurityStaffAttendancePage`, `SecuritySOSPage`, `SecurityPatrolPage`. **`ROLE_GROUPS.securityPortal`** includes **Admin** + **SecurityGuard** (matches API). Resident — **`ResidentGuestPage`**, **`ResidentSOSPage`** (`/resident/guests`, `/resident/sos`). Admin — **`AdminStaffPage`** (`/admin/staff`). Removed legacy `SecurityPanelPage.jsx`.
+- **Frontend:** Nested **`/security`** under `SecurityLayout` — `SecurityOverviewPage`, `SecurityVisitorLogsPage`, `SecurityGatePage`, `SecurityStaffAttendancePage`, `SecuritySOSPage`, `SecurityPatrolPage`. **`ROLE_GROUPS.securityPortal`** includes **Admin** + **SecurityGuard** (matches API). Resident — **`ResidentGuestPage`**, **`ResidentSOSPage`** (`/resident/guests`, `/resident/sos`). Admin — **`AdminStaffPage`** (`/admin/staff`). Removed legacy `SecurityPanelPage.jsx`.
 - **Verify:** `npm run build -w frontend` OK.
 
 ## 2026-05-10 — Phase 6: Amenities (facilities & bookings)
@@ -162,3 +162,7 @@
 - **Frontend (admin):** `MembersPage.jsx` — Delete; `OwnershipPage.jsx` — Edit (unit, member, type, dates) + Delete + End tenancy; `AdminNoticesPage.jsx` — Edit dialog + existing Delete; `AdminPollsPage.jsx` — Edit + Delete + Close; `AdminComplaintsPage.jsx` — Edit dialog (status) + Delete (replaces inline status-only control).
 - **Frontend (resident):** `ResidentComplaintsPage.jsx` — Delete for **Pending** only + helper copy.
 - **Verify:** `node --check` on touched backend files; `npm run build` in **`frontend/`** OK.
+
+## 2026-07-07 — Portal overview pages renamed (`*HomePage` → `*OverviewPage`)
+
+- **Frontend:** Renamed portal landing pages to match nav label **Overview** in each `*Layout`: `AdminHomePage` → **`AdminOverviewPage`**, `AccountantHomePage` → **`AccountantOverviewPage`**, `ResidentHomePage` → **`ResidentOverviewPage`**, `SecurityHomePage` → **`SecurityOverviewPage`**. Files under `frontend/src/features/{admin,accountant,resident,security}/pages/`; exports and **`App.jsx`** index-route imports updated. Route paths unchanged (`/admin`, `/accountant`, `/resident`, `/security`).

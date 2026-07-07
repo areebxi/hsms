@@ -7,7 +7,7 @@ const LINKS = [
   { to: "/accountant/reports", title: "Financial reports", desc: "Generate income, expense, and balance reports." },
 ];
 
-export function AccountantHomePage() {
+export function AccountantOverviewPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Overview</Typography>

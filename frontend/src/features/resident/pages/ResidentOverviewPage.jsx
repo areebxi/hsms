@@ -39,7 +39,7 @@ const LINKS = [
   },
 ];
 
-export function ResidentHomePage() {
+export function ResidentOverviewPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Overview</Typography>

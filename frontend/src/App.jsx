@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./shared/layout/AppShell.jsx";
 import { LoginPage } from "./features/auth/pages/LoginPage.jsx";
 import { AdminLayout } from "./features/admin/AdminLayout.jsx";
-import { AdminHomePage } from "./features/admin/pages/AdminHomePage.jsx";
+import { AdminOverviewPage } from "./features/admin/pages/AdminOverviewPage.jsx";
 import { MembersPage } from "./features/admin/pages/MembersPage.jsx";
 import { UnitsPage } from "./features/admin/pages/UnitsPage.jsx";
 import { OwnershipPage } from "./features/admin/pages/OwnershipPage.jsx";
@@ -10,18 +10,18 @@ import { AdminNoticesPage } from "./features/admin/pages/AdminNoticesPage.jsx";
 import { AdminComplaintsPage } from "./features/admin/pages/AdminComplaintsPage.jsx";
 import { AdminPollsPage } from "./features/admin/pages/AdminPollsPage.jsx";
 import { AccountantLayout } from "./features/accountant/AccountantLayout.jsx";
-import { AccountantHomePage } from "./features/accountant/pages/AccountantHomePage.jsx";
+import { AccountantOverviewPage } from "./features/accountant/pages/AccountantOverviewPage.jsx";
 import { FinanceBillsPage } from "./features/accountant/pages/FinanceBillsPage.jsx";
 import { ExpensesPage } from "./features/accountant/pages/ExpensesPage.jsx";
 import { ReportsPage } from "./features/accountant/pages/ReportsPage.jsx";
 import { ResidentLayout } from "./features/resident/ResidentLayout.jsx";
-import { ResidentHomePage } from "./features/resident/pages/ResidentHomePage.jsx";
+import { ResidentOverviewPage } from "./features/resident/pages/ResidentOverviewPage.jsx";
 import { ResidentBillsPage } from "./features/resident/pages/ResidentBillsPage.jsx";
 import { ResidentNoticesPage } from "./features/resident/pages/ResidentNoticesPage.jsx";
 import { ResidentComplaintsPage } from "./features/resident/pages/ResidentComplaintsPage.jsx";
 import { ResidentPollsPage } from "./features/resident/pages/ResidentPollsPage.jsx";
 import { SecurityLayout } from "./features/security/SecurityLayout.jsx";
-import { SecurityHomePage } from "./features/security/pages/SecurityHomePage.jsx";
+import { SecurityOverviewPage } from "./features/security/pages/SecurityOverviewPage.jsx";
 import { SecurityVisitorLogsPage } from "./features/security/pages/SecurityVisitorLogsPage.jsx";
 import { SecurityGatePage } from "./features/security/pages/SecurityGatePage.jsx";
 import { SecurityStaffAttendancePage } from "./features/security/pages/SecurityStaffAttendancePage.jsx";
@@ -59,7 +59,7 @@ export default function App() {
             </RequireRole>
           }
         >
-          <Route index element={<AdminHomePage />} />
+          <Route index element={<AdminOverviewPage />} />
           <Route path="members" element={<MembersPage />} />
           <Route path="units" element={<UnitsPage />} />
           <Route path="ownership" element={<OwnershipPage />} />
@@ -78,7 +78,7 @@ export default function App() {
             </RequireRole>
           }
         >
-          <Route index element={<AccountantHomePage />} />
+          <Route index element={<AccountantOverviewPage />} />
           <Route path="bills" element={<FinanceBillsPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
           <Route path="reports" element={<ReportsPage />} />
@@ -91,7 +91,7 @@ export default function App() {
             </RequireRole>
           }
         >
-          <Route index element={<ResidentHomePage />} />
+          <Route index element={<ResidentOverviewPage />} />
           <Route path="bills" element={<ResidentBillsPage />} />
           <Route path="notices" element={<ResidentNoticesPage />} />
           <Route path="complaints" element={<ResidentComplaintsPage />} />
@@ -108,7 +108,7 @@ export default function App() {
             </RequireRole>
           }
         >
-          <Route index element={<SecurityHomePage />} />
+          <Route index element={<SecurityOverviewPage />} />
           <Route path="visitors" element={<SecurityVisitorLogsPage />} />
           <Route path="gate" element={<SecurityGatePage />} />
           <Route path="staff-attendance" element={<SecurityStaffAttendancePage />} />

@@ -9,7 +9,7 @@ const LINKS = [
   { to: "/security/patrols", title: "Patrols", desc: "Log patrol routes and checkpoints." },
 ];
 
-export function SecurityHomePage() {
+export function SecurityOverviewPage() {
   return (
     <Stack spacing={3}>
       <Box>

@@ -2,7 +2,7 @@ import { Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const AREAS = [
-  { to: "/admin/members", title: "Members", desc: "Add residents and search the member directory with contact and vehicle details." },
+  { to: "/admin/members", title: "Members & directory", desc: "Add residents and search the member directory with contact and vehicle details." },
   { to: "/admin/units", title: "Units", desc: "Set up flats and plots — type, floor, charges, and who lives there." },
   { to: "/admin/ownership", title: "Ownership & tenancy", desc: "Record who owns or rents each unit, including past assignments." },
   { to: "/admin/notices", title: "Notices", desc: "Post announcements and meeting updates for residents." },
@@ -25,7 +25,7 @@ const AREAS = [
   },
 ];
 
-export function AdminHomePage() {
+export function AdminOverviewPage() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Overview</Typography>

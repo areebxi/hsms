@@ -3,7 +3,7 @@ import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 
 const LINKS = [
   { to: "/admin", label: "Overview", end: true },
-  { to: "/admin/members", label: "Members" },
+  { to: "/admin/members", label: "Members & directory" },
   { to: "/admin/units", label: "Units" },
   { to: "/admin/ownership", label: "Ownership & tenancy" },
   { to: "/admin/notices", label: "Notices" },
