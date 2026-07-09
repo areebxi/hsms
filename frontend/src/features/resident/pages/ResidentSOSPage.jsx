@@ -1,3 +1,7 @@
+/**
+ * Send an emergency SOS alert to security with an optional location note,
+ * and review recent alerts and their status.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -18,11 +22,12 @@ import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentSOSPage() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]); // resident's past SOS alerts
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(""); // optional location or situation text
 
+  // Load recent SOS alerts raised by this resident.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -40,6 +45,7 @@ export function ResidentSOSPage() {
     load();
   }, [load]);
 
+  // SOS flow: post alert to security, clear the note, and reload history.
   async function triggerSOS(e) {
     e.preventDefault();
     setError(null);

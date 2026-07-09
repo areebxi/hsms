@@ -1,3 +1,7 @@
+/**
+ * Open SOS alerts raised by residents. Security reviews each alert and
+ * acknowledges it once they have responded to the emergency.
+ */
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 
@@ -9,6 +13,7 @@ export function SecuritySOSPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Only show alerts that still need a security response.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -26,6 +31,7 @@ export function SecuritySOSPage() {
     load();
   }, [load]);
 
+  // Tell the system this alert has been seen and handled; it leaves the open list.
   async function acknowledge(id) {
     setError(null);
     try {

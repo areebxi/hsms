@@ -1,3 +1,7 @@
+/**
+ * Admin members directory. The admin can search, register, edit, and delete
+ * society members, including role, status, family household, and vehicles.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -29,6 +33,7 @@ import { ROLES } from "../../../shared/constants/roles.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
+// Format an ISO timestamp for display in the table.
 function formatDate(iso) {
   if (!iso) return "—";
   try {
@@ -41,6 +46,7 @@ function formatDate(iso) {
 const ROLE_OPTIONS = Object.values(ROLES);
 const STATUS_OPTIONS = ["Active", "Inactive"];
 
+// Default empty form for register/edit dialogs.
 function createEmptyForm() {
   return {
     name: "",
@@ -54,6 +60,7 @@ function createEmptyForm() {
   };
 }
 
+// Normalize family members from API shape into form-friendly strings.
 function normalizeFamilyFromApi(v) {
   if (!v || typeof v !== "object" || !Array.isArray(v.members)) {
     return { members: [] };
@@ -68,6 +75,7 @@ function normalizeFamilyFromApi(v) {
   };
 }
 
+// Normalize vehicles from API shape into form-friendly strings.
 function normalizeVehicleFromApi(v) {
   if (!v || typeof v !== "object" || !Array.isArray(v.vehicles)) {
     return { vehicles: [] };
@@ -82,6 +90,8 @@ function normalizeVehicleFromApi(v) {
 }
 
 /**
+ * Validate and build family/vehicle payload for create and update.
+ * Skips blank rows; returns an error string if any partial row is invalid.
  * @param {{ familyDetails: { members: Array<{ name: string, relationship: string, age: string, phone: string }> }, vehicleInfo: { vehicles: Array<{ registrationNumber: string, makeModel: string, color: string }> } }} form
  * @returns {{ familyDetails: object, vehicleInfo: object } | { error: string }}
  */
@@ -133,12 +143,14 @@ function buildFamilyAndVehiclePayload(form) {
   return { familyDetails: { members }, vehicleInfo: { vehicles } };
 }
 
+// Short summary of family and vehicle counts for the table column.
 function householdSummary(row) {
   const n = Array.isArray(row.familyDetails?.members) ? row.familyDetails.members.length : 0;
   const v = Array.isArray(row.vehicleInfo?.vehicles) ? row.vehicleInfo.vehicles.length : 0;
   return `${n} fam · ${v} veh`;
 }
 
+// Reusable form section for family members and vehicles inside register/edit dialogs.
 function MemberFamilyVehicleSection({ form, setForm }) {
   const { members } = form.familyDetails;
   const { vehicles } = form.vehicleInfo;
@@ -352,7 +364,8 @@ function MemberFamilyVehicleSection({ form, setForm }) {
   );
 }
 
-export function MembersPage() {
+export function AdminMembersPage() {
+  // Search: queryInput is what the user types; appliedQuery triggers the API call.
   const [appliedQuery, setAppliedQuery] = useState("");
   const [queryInput, setQueryInput] = useState("");
   const [items, setItems] = useState([]);
@@ -367,6 +380,7 @@ export function MembersPage() {
 
   const [form, setForm] = useState(() => createEmptyForm());
 
+  // Fetch members from the API, optionally filtered by search query.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -385,10 +399,12 @@ export function MembersPage() {
     }
   }, [appliedQuery]);
 
+  // Reload members when the page mounts or the search query changes.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Register a new member with password, role, and optional family/vehicles.
   async function handleCreate(e) {
     e.preventDefault();
     setDialogError(null);
@@ -426,6 +442,7 @@ export function MembersPage() {
     }
   }
 
+  // Update an existing member; password is optional on edit.
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
@@ -467,6 +484,7 @@ export function MembersPage() {
     }
   }
 
+  // Open the edit dialog and populate the form from the selected row.
   function openEdit(row) {
     setPhoneError(null);
     setDialogError(null);
@@ -483,6 +501,7 @@ export function MembersPage() {
     });
   }
 
+  // Delete a member after confirmation.
   async function handleDelete(row) {
     if (!window.confirm(`Delete member ${row.name}? This cannot be undone.`)) return;
     setError(null);

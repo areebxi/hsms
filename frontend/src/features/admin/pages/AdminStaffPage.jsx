@@ -1,3 +1,7 @@
+/**
+ * Admin staff and vendors registry. The admin can register domestic staff
+ * and vendors (with optional unit assignment) for gate check-in.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -32,6 +36,7 @@ export function AdminStaffPage() {
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
+  // When set, the dialog is in edit mode for this staff row.
   const [edit, setEdit] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [form, setForm] = useState({
@@ -41,6 +46,7 @@ export function AdminStaffPage() {
     assignedUnitId: "",
   });
 
+  // Fetch staff list and units (for the optional unit assignment dropdown).
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -55,10 +61,12 @@ export function AdminStaffPage() {
     }
   }, []);
 
+  // Load staff and units when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Reset form and open the dialog for a new staff member.
   function openCreate() {
     setEdit(null);
     setPhoneError(null);
@@ -67,6 +75,7 @@ export function AdminStaffPage() {
     setOpen(true);
   }
 
+  // Fill the form with an existing staff member's data for editing.
   function openEdit(row) {
     setEdit(row);
     setPhoneError(null);
@@ -80,6 +89,7 @@ export function AdminStaffPage() {
     setOpen(true);
   }
 
+  // Create or update a staff member depending on whether edit is set.
   async function handleSave(e) {
     e.preventDefault();
     setDialogError(null);
@@ -108,6 +118,7 @@ export function AdminStaffPage() {
     }
   }
 
+  // Remove a staff member after confirmation.
   async function handleDelete(row) {
     if (!window.confirm(`Remove staff ${row.name}?`)) return;
     try {

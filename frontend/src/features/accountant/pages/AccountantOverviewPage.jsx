@@ -1,8 +1,13 @@
+/**
+ * Accountant portal home page. Links to the three main finance areas:
+ * billing, expense logging, and financial reports.
+ */
 import { Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
+// Quick navigation cards for each accountant workflow.
 const LINKS = [
-  { to: "/accountant/bills", title: "Bills & defaulters", desc: "Create maintenance bills and see who has not paid." },
+  { to: "/accountant/bills", title: "Bills & defaulters", desc: "Generate maintenance bills, add utility bills, and see who has not paid." },
   { to: "/accountant/expenses", title: "Expenses", desc: "Log society spending by category." },
   { to: "/accountant/reports", title: "Financial reports", desc: "Generate income, expense, and balance reports." },
 ];

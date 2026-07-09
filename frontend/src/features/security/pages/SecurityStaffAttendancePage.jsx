@@ -1,3 +1,7 @@
+/**
+ * Staff and vendor check-in/out at the gate. Admin registers staff; security
+ * records when they enter and leave the society.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -51,6 +55,7 @@ export function SecurityStaffAttendancePage() {
     load();
   }, [load]);
 
+  // Start a new attendance record when staff arrives on site.
   async function handleCheckIn(e) {
     e.preventDefault();
     setDialogError(null);
@@ -64,6 +69,7 @@ export function SecurityStaffAttendancePage() {
     }
   }
 
+  // Close the open attendance record when staff leaves.
   async function handleCheckOut(id) {
     setError(null);
     try {
@@ -74,6 +80,7 @@ export function SecurityStaffAttendancePage() {
     }
   }
 
+  // Staff still on premises have no exit time yet.
   const openRows = rows.filter((r) => !r.exitTime);
 
   return (

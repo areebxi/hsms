@@ -1,3 +1,7 @@
+/**
+ * Money spent by the society on operations — repairs, salaries, utilities, etc.
+ * Separate from resident bills and payments.
+ */
 import mongoose from "mongoose";
 
 const expenseSchema = new mongoose.Schema(

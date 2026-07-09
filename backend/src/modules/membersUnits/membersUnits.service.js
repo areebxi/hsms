@@ -1,3 +1,7 @@
+/**
+ * Members, units, and ownership records — core society directory data.
+ * Ownership changes drive unit Occupied/Vacant status; user deletion has safety guards.
+ */
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -49,6 +53,8 @@ function serializeOwnership(doc, populated = false) {
   }
   return out;
 }
+
+// --- Users (admin-managed accounts for all roles) ---
 
 export async function listUsers(query) {
   const limit = query.limit ?? 50;
@@ -125,8 +131,8 @@ export async function updateUser(userId, body) {
 }
 
 /**
- * @param {string} userId
- * @param {{ userId: string }} auth
+ * Remove user — blocked if last admin, self-delete, or linked ownership/complaints exist.
+ * Preserves data integrity for billing and complaint history.
  */
 export async function deleteUser(userId, auth) {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -159,6 +165,8 @@ export async function deleteUser(userId, auth) {
   if (!deleted) throw new HttpError(404, "User not found");
   return { deleted: true };
 }
+
+// --- Units (physical properties with monthly charge defaults for billing) ---
 
 export async function listUnits(query) {
   const limit = query.limit ?? 50;
@@ -217,6 +225,7 @@ export async function updateUnit(unitId, body) {
   }
 }
 
+/** Cannot delete units with ownership history — audit trail must be preserved. */
 export async function deleteUnit(unitId) {
   if (!mongoose.Types.ObjectId.isValid(unitId)) {
     throw new HttpError(400, "Invalid unit id");
@@ -249,6 +258,7 @@ export async function listResidentUnits(userId) {
   return { items: units.map(serializeUnit) };
 }
 
+/** Keep unit.status in sync when ownership records are added, ended, or removed. */
 async function syncUnitOccupancy(unitId) {
   const oid =
     typeof unitId === "string" ? new mongoose.Types.ObjectId(unitId) : unitId;
@@ -260,6 +270,8 @@ async function syncUnitOccupancy(unitId) {
     status: active ? "Occupied" : "Vacant",
   });
 }
+
+// --- Ownership records (link residents to units; drives billing and complaints) ---
 
 export async function listOwnershipRecords(query) {
   const limit = query.limit ?? 50;

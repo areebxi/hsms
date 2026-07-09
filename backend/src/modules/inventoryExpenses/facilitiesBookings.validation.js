@@ -1,3 +1,6 @@
+/**
+ * Zod schemas for facilities and resident bookings.
+ */
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -11,6 +14,7 @@ export const timeSlotString = z
   .trim()
   .regex(/^([01]?\d|2[0-3]):[0-5]\d$/, { message: "Use HH:mm (24h)" });
 
+/** Facility catalog filter — residents default to Active in the service. */
 export const listFacilitiesQuery = z.object({
   limit: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -42,6 +46,7 @@ export const listBookingsQuery = z.object({
   status: z.enum(["Confirmed", "Cancelled"]).optional(),
 });
 
+/** Resident booking — end time must be after start (enforced before overlap check). */
 export const createBookingBody = z
   .object({
     facilityId: objectIdString,
@@ -58,6 +63,7 @@ export const createBookingBody = z
     { message: "timeSlotEnd must be after timeSlotStart", path: ["timeSlotEnd"] }
   );
 
+/** Day view for slot picker — which intervals are already taken. */
 export const occupiedSlotsQuery = z.object({
   date: z.coerce.date(),
 });

@@ -1,3 +1,4 @@
+// Security guard portal layout — gate, visitors, patrols, and SOS tools.
 import { Outlet } from "react-router-dom";
 import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 
@@ -7,7 +8,7 @@ const LINKS = [
   { to: "/security/gate", label: "Gate access" },
   { to: "/security/staff-attendance", label: "Staff attendance" },
   { to: "/security/sos", label: "SOS alerts" },
-  { to: "/security/patrols", label: "Security patrols" },
+  { to: "/security/patrols", label: "Patrols" },
 ];
 
 export function SecurityLayout() {

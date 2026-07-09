@@ -1,6 +1,12 @@
+/**
+ * Admin landing page. Shows a card for each admin area so the admin can
+ * jump to members, units, ownership, notices, complaints, polls, staff,
+ * facilities, or inventory management.
+ */
 import { Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
+// Navigation cards: route, title, and short description for each admin section.
 const AREAS = [
   { to: "/admin/members", title: "Members & directory", desc: "Add residents and search the member directory with contact and vehicle details." },
   { to: "/admin/units", title: "Units", desc: "Set up flats and plots — type, floor, charges, and who lives there." },

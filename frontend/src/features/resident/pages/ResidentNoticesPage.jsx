@@ -1,9 +1,13 @@
+/**
+ * Read society notices posted by the office: title, priority, date, and full text.
+ */
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 import { apiGet } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
+// Pick chip colour from notice priority (high / medium / low).
 function priorityChipProps(priority) {
   const p = String(priority || "").toLowerCase();
   if (p.includes("high"))
@@ -19,6 +23,7 @@ export function ResidentNoticesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch published notices for residents to read.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);

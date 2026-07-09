@@ -1,5 +1,5 @@
 /**
- * Lightweight smoke check for deployments / CI (requires API listening).
+ * Quick health (and optional login) check against a running API — useful after deploy or in CI.
  *
  * Usage:
  *   SMOKE_BASE_URL=http://127.0.0.1:5001 node src/scripts/smoke-test.js

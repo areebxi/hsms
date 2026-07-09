@@ -1,13 +1,18 @@
+/**
+ * Billing and payment business logic.
+ * Residents only see bills/payments for their assigned units; finance staff manage issuance.
+ * Overdue is derived at read time from pending bills past their due date.
+ */
 import mongoose from "mongoose";
-
 import { HttpError } from "../../lib/httpError.js";
-import { processCardPayment } from "../../integrations/dummyPaymentProvider.js";
+import { processDummyPayment } from "../../integrations/dummyPaymentProvider.js";
 import { sendNotification } from "../../integrations/notificationProvider.js";
 import { Bill } from "../../models/Bill.js";
 import { Payment } from "../../models/Payment.js";
 import { User } from "../../models/User.js";
 import { Unit } from "../../models/Unit.js";
 import { OwnershipRecord } from "../../models/OwnershipRecord.js";
+import { AppNotification } from "../../models/AppNotification.js";
 
 function startOfToday() {
   const d = new Date();
@@ -15,6 +20,7 @@ function startOfToday() {
   return d;
 }
 
+/** Pending bills past due date are surfaced as Overdue without mutating stored status. */
 function serializeBill(doc, populated = false) {
   if (!doc) return null;
   const b = doc.toObject ? doc.toObject() : { ...doc };
@@ -74,7 +80,7 @@ function serializePayment(doc, populated = false) {
 }
 
 /**
- * FR-2a: notify current residents when a bill is issued (`channel: app`; stub logs until real push/in-app feed exists).
+ * FR-2a: notify current residents when a bill is issued (`channel: app`; persisted as AppNotification).
  */
 async function notifyResidentsNewBill(billSerialized) {
   if (!billSerialized?.unitId) return;
@@ -111,6 +117,7 @@ async function notifyResidentsNewBill(billSerialized) {
   }
 }
 
+/** Unit IDs where the user has an active ownership/tenancy record (no end date). */
 export async function getCurrentUnitIdsForUser(userId) {
   const oid =
     typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
@@ -123,6 +130,7 @@ export async function getCurrentUnitIdsForUser(userId) {
   return rows.map((r) => r.unitId.toString());
 }
 
+/** List bills — residents are scoped to their units; staff see all. */
 export async function listBills(query, auth) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -174,6 +182,7 @@ export async function listBills(query, auth) {
   };
 }
 
+/** Single bill lookup with resident unit-ownership check. */
 export async function getBillById(billId, auth) {
   if (!mongoose.Types.ObjectId.isValid(billId)) {
     throw new HttpError(400, "Invalid bill id");
@@ -195,6 +204,7 @@ export async function getBillById(billId, auth) {
   return serializeBill(bill, true);
 }
 
+/** Manually issue one bill for a unit and notify current residents. */
 export async function createBill(body, generatedByUserId) {
   const unit = await Unit.findById(body.unitId);
   if (!unit) throw new HttpError(404, "Unit not found");
@@ -276,6 +286,7 @@ export async function generateBills(body, generatedByUserId) {
   return { created, skipped, summary: { created: created.length, skipped: skipped.length } };
 }
 
+/** Edit an unpaid bill — paid bills are locked to preserve payment integrity. */
 export async function patchBill(billId, body) {
   if (!mongoose.Types.ObjectId.isValid(billId)) {
     throw new HttpError(400, "Invalid bill id");
@@ -295,6 +306,7 @@ export async function patchBill(billId, body) {
   return serializeBill(bill, true);
 }
 
+/** Finance-only view of unpaid bills past due — used for follow-up and reports. */
 export async function listDefaulters(auth) {
   if (auth.role === "Resident") {
     throw new HttpError(403, "Insufficient permissions");
@@ -314,13 +326,16 @@ export async function listDefaulters(auth) {
   };
 }
 
-function cardPaymentErrorMessage(reason) {
-  if (reason === "invalid_card_number") return "Invalid card number";
+function dummyPaymentErrorMessage(reason) {
   if (reason === "invalid_amount") return "Payment could not be completed";
   return "Payment could not be completed";
 }
 
-export async function payBillWithCard(body, payerUserId) {
+/**
+ * Resident pays a bill via the dummy payment gateway.
+ * Verifies unit ownership, prevents double payment, and marks the bill Paid on success.
+ */
+export async function payBillViaGateway(body, payerUserId) {
   const bill = await Bill.findById(body.billId);
   if (!bill) throw new HttpError(404, "Bill not found");
 
@@ -338,21 +353,22 @@ export async function payBillWithCard(body, payerUserId) {
     throw new HttpError(409, "Payment already recorded for this bill");
   }
 
-  const result = processCardPayment({
+  const paymentMethod = body.paymentMethod || "Visa";
+  const result = processDummyPayment({
     billId: bill._id.toString(),
-    cardNumber: body.cardNumber,
     amount: bill.amount,
+    paymentMethod,
   });
 
   if (!result.ok) {
-    throw new HttpError(400, cardPaymentErrorMessage(result.reason));
+    throw new HttpError(400, dummyPaymentErrorMessage(result.reason));
   }
 
   const payment = await Payment.create({
     billId: bill._id,
     paidBy: payerUserId,
     amountPaid: bill.amount,
-    paymentMethod: "Card",
+    paymentMethod,
     transactionRef: result.transactionRef,
     paidAt: new Date(result.paidAt),
   });
@@ -366,6 +382,7 @@ export async function payBillWithCard(body, payerUserId) {
   return serializePayment(populated, true);
 }
 
+/** Payment history — residents see only their own; staff see all. */
 export async function listPayments(query, auth) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -394,4 +411,68 @@ export async function listPayments(query, auth) {
     limit,
     skip,
   };
+}
+
+function serializeNotification(doc) {
+  if (!doc) return null;
+  const n = doc.toObject ? doc.toObject() : { ...doc };
+  return {
+    id: n._id?.toString?.() ?? String(n._id),
+    userId: n.userId?.toString?.() ?? String(n.userId),
+    channel: n.channel,
+    subject: n.subject,
+    event: n.event,
+    payload: n.payload,
+    read: n.read,
+    createdAt: n.createdAt,
+    updatedAt: n.updatedAt,
+  };
+}
+
+/** In-app bill notifications for residents (unread by default). */
+export async function listNotifications(query, auth) {
+  if (auth.role !== "Resident") {
+    throw new HttpError(403, "Only residents can list in-app notifications");
+  }
+
+  const limit = query.limit ?? 50;
+  const skip = query.skip ?? 0;
+  const filter = { userId: auth.userId };
+  if (query.unreadOnly !== false) {
+    filter.read = false;
+  }
+
+  const [items, total] = await Promise.all([
+    AppNotification.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    AppNotification.countDocuments(filter),
+  ]);
+
+  return {
+    items: items.map(serializeNotification),
+    total,
+    limit,
+    skip,
+  };
+}
+
+/** Resident dismisses a notification — scoped to their own user id. */
+export async function markNotificationRead(notificationId, auth) {
+  if (auth.role !== "Resident") {
+    throw new HttpError(403, "Only residents can dismiss in-app notifications");
+  }
+  if (!mongoose.Types.ObjectId.isValid(notificationId)) {
+    throw new HttpError(400, "Invalid notification id");
+  }
+
+  const row = await AppNotification.findOne({
+    _id: notificationId,
+    userId: auth.userId,
+  });
+  if (!row) {
+    throw new HttpError(404, "Notification not found");
+  }
+
+  row.read = true;
+  await row.save();
+  return serializeNotification(row);
 }

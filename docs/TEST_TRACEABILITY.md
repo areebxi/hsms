@@ -20,8 +20,8 @@ Maps acceptance test cases **TC-01 … TC-23** ([HSMS - Design Document - Test C
 | TC-08 | UC-08 Manage Inventory | FR-5 | `GET/POST/PATCH/DELETE /inventory` | `/admin/inventory` (Admin) | Pass |
 | TC-09 | UC-09 Submit Complaint | FR-3b | `POST /complaints` | `/resident/complaints` (Resident) | Pass |
 | TC-10 | UC-10 Track Complaint Status | FR-3b | `GET /complaints`, `PATCH /complaints/:id` | `/resident/complaints`, `/admin/complaints` | Pass |
-| TC-11 | UC-11 Pay Bills | FR-2b | `GET /bills`, `POST /payments/card` | `/resident/bills` (Resident) | Pass |
-| TC-12 | UC-12 Dummy Payment Processing | FR-2b | `POST /payments/card` | `/resident/bills` + `dummyPaymentProvider` | Pass |
+| TC-11 | UC-11 Pay Bills | FR-2b | `GET /bills`, `POST /payments/gateway` | `/resident/bills` (Resident) | Pass |
+| TC-12 | UC-12 Dummy Payment Processing | FR-2b | `POST /payments/gateway` | `/resident/bills` + `dummyPaymentProvider` | Pass |
 | TC-13 | UC-13 SOS Alert | FR-3c | `POST /sos/alerts` | `/resident/sos` (Resident) | Pass |
 | TC-14 | UC-14 Notify Security Guard | FR-3c | `POST /sos/alerts/:id/acknowledge` | `/security/sos` (Security/Admin) | Pass |
 | TC-15 | UC-15 Pre-Approve Guest | FR-4b | `POST /guest-approvals` | `/resident/guests` (Resident) | Pass |
@@ -99,13 +99,13 @@ Maps acceptance test cases **TC-01 … TC-23** ([HSMS - Design Document - Test C
 
 ### TC-11 — Pay Bills (UC-11)
 
-- **API:** `GET /bills` (scoped by role); `POST /payments/card` (Resident).
-- **UI:** `ResidentBillsPage.jsx` — pay action opens dummy card form.
+- **API:** `GET /bills` (scoped by role); `POST /payments/gateway` (Resident).
+- **UI:** `ResidentBillsPage.jsx` — pay action opens simulated gateway (card Visa/Mastercard or net banking). Card/bank details are UI-only and not sent to the API.
 
 ### TC-12 — Dummy Payment Processing (UC-12)
 
-- **API:** `POST /payments/card` → `dummyPaymentProvider` → bill status set to paid; unique payment per bill.
-- **Service:** `billing.service.js` — `payBillWithCard`.
+- **API:** `POST /payments/gateway` with `{ billId, paymentMethod? }` → `dummyPaymentProvider` returns a fake txn ref → bill status set to paid; unique payment per bill. No PAN/CVV/PIN validation.
+- **Service:** `billing.service.js` — `payBillViaGateway`.
 - **Rule:** One payment record per bill; bill `effectiveStatus` reflects overdue when pending past due date.
 
 ### TC-13 — SOS Alert (UC-13)
@@ -182,7 +182,7 @@ Beyond the formal TC list, verify these application-enforced rules ([plan.md](pl
 |------|----------------|
 | One vote per poll | Second `POST /votes` for same poll → error |
 | No double facility booking | Overlapping `POST /bookings` → `409` |
-| Bill paid on payment | After `POST /payments/card`, bill status is Paid |
+| Bill paid on payment | After `POST /payments/gateway`, bill status is Paid |
 | SOS rate limit | Excessive `POST /sos/alerts` → `429` |
 | Login rate limit | Excessive failed `POST /auth/login` → `429` |
 

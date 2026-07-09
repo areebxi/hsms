@@ -1,5 +1,10 @@
+/**
+ * Members, units, and ownership HTTP routes.
+ * Admin owns writes; security/accountant get read access where needed for gate and billing.
+ */
 import { Router } from "express";
 
+import { HttpError } from "../../lib/httpError.js";
 import { authenticateJwt, requireDb, requireRoles } from "../../middleware/auth.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import * as service from "./membersUnits.service.js";
@@ -8,6 +13,11 @@ import * as val from "./membersUnits.validation.js";
 const router = Router();
 
 const adminStack = [requireDb, authenticateJwt, requireRoles("Admin")];
+const userListReaders = [
+  requireDb,
+  authenticateJwt,
+  requireRoles("Admin", "SecurityGuard"),
+];
 const adminOrFinanceStack = [requireDb, authenticateJwt, requireRoles("Admin", "Accountant")];
 const unitReaders = [
   requireDb,
@@ -15,11 +25,17 @@ const unitReaders = [
   requireRoles("Admin", "Accountant", "SecurityGuard"),
 ];
 
+// --- Users (admin CRUD; security may list residents only) ---
+
 router.get(
   "/users",
-  ...adminStack,
+  ...userListReaders,
   asyncHandler(async (req, res) => {
     const query = val.listUsersQuery.parse(req.query);
+    // Security guards may only browse residents (for gate lookup), not staff accounts.
+    if (req.auth.role === "SecurityGuard" && query.role !== "Resident") {
+      throw new HttpError(403, "Security guards may only list residents");
+    }
     const result = await service.listUsers(query);
     res.json(result);
   })
@@ -69,6 +85,8 @@ router.delete(
   })
 );
 
+// --- Resident self-service: units linked to current ownership ---
+
 router.get(
   "/my-units",
   requireDb,
@@ -79,6 +97,8 @@ router.get(
     res.json(result);
   })
 );
+
+// --- Units (read: admin/accountant/security; write: admin) ---
 
 router.get(
   "/units",
@@ -133,6 +153,8 @@ router.delete(
     res.json(result);
   })
 );
+
+// --- Ownership records (admin only — links users to units for billing/access) ---
 
 router.get(
   "/ownership-records",

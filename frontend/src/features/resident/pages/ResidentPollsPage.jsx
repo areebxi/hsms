@@ -1,3 +1,7 @@
+/**
+ * Browse society polls, open one to see options and results,
+ * and cast a vote when voting is open and the resident has not voted yet.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -17,11 +21,12 @@ import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentPollsPage() {
   const [polls, setPolls] = useState([]);
-  const [detail, setDetail] = useState(null);
-  const [choice, setChoice] = useState("");
+  const [detail, setDetail] = useState(null); // full poll loaded for voting / results
+  const [choice, setChoice] = useState(""); // selected option before submit
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Load all polls (open and closed) for the list view.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -39,6 +44,7 @@ export function ResidentPollsPage() {
     load();
   }, [load]);
 
+  // Fetch one poll with options, results, and whether this resident can vote.
   async function openPoll(id) {
     setError(null);
     setChoice("");
@@ -50,6 +56,7 @@ export function ResidentPollsPage() {
     }
   }
 
+  // Submit the chosen option, then reload poll detail and the poll list.
   async function submitVote(e) {
     e.preventDefault();
     if (!detail || !choice) return;

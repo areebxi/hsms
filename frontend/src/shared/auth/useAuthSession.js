@@ -1,3 +1,4 @@
+// Hook that figures out whether the visitor is a guest or a signed-in user (and where to send them).
 import { useEffect, useState } from "react";
 
 import { apiGet, getStoredToken, setStoredToken } from "../api/client.js";
@@ -21,10 +22,12 @@ export function useAuthSession() {
   );
 
   useEffect(() => {
+    // No token in localStorage — treat as guest right away.
     if (!getStoredToken()) {
       setState({ kind: "guest" });
       return;
     }
+    // Token exists — verify it with the server and map role to a portal home path.
     apiGet("/auth/me")
       .then((u) => {
         const home = ROLE_HOME[u.role];
@@ -32,6 +35,7 @@ export function useAuthSession() {
         else setState({ kind: "guest" });
       })
       .catch(() => {
+        // Expired or invalid token — clear it so the next visit starts fresh.
         setStoredToken(null);
         setState({ kind: "guest" });
       });

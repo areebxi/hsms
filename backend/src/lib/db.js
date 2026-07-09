@@ -1,3 +1,6 @@
+/**
+ * MongoDB connection helper used at server startup.
+ */
 import mongoose from "mongoose";
 
 /**
@@ -10,6 +13,7 @@ export async function connectDb() {
     console.warn("[db] MONGODB_URI not set — starting without MongoDB connection.");
     return;
   }
+  // Reject unknown query keys instead of silently ignoring them.
   mongoose.set("strictQuery", true);
   await mongoose.connect(uri);
   console.log("[db] Connected to MongoDB");

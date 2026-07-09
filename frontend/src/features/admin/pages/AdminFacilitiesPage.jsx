@@ -1,3 +1,7 @@
+/**
+ * Admin facilities management. The admin can add, edit, and delete bookable
+ * facilities (e.g. clubhouse, courts) and set capacity and status.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -29,6 +33,7 @@ export function AdminFacilitiesPage() {
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
+  // When set, the dialog is in edit mode for this facility.
   const [edit, setEdit] = useState(null);
   const [form, setForm] = useState({
     name: "",
@@ -37,6 +42,7 @@ export function AdminFacilitiesPage() {
     status: "Active",
   });
 
+  // Fetch all facilities from the API.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -50,10 +56,12 @@ export function AdminFacilitiesPage() {
     }
   }, []);
 
+  // Load facilities when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Reset form and open the dialog for a new facility.
   function openCreate() {
     setDialogError(null);
     setEdit(null);
@@ -61,6 +69,7 @@ export function AdminFacilitiesPage() {
     setOpen(true);
   }
 
+  // Fill the form with an existing facility's data for editing.
   function openEdit(row) {
     setDialogError(null);
     setEdit(row);
@@ -73,6 +82,7 @@ export function AdminFacilitiesPage() {
     setOpen(true);
   }
 
+  // Create or update a facility depending on whether edit is set.
   async function handleSave(e) {
     e.preventDefault();
     setDialogError(null);
@@ -95,6 +105,7 @@ export function AdminFacilitiesPage() {
     }
   }
 
+  // Delete a facility after confirmation.
   async function handleDelete(row) {
     if (!window.confirm(`Delete facility “${row.name}”?`)) return;
     try {

@@ -1,3 +1,6 @@
+/**
+ * A society-wide announcement posted by admin for residents to read.
+ */
 import mongoose from "mongoose";
 
 const noticeSchema = new mongoose.Schema(
@@ -9,6 +12,7 @@ const noticeSchema = new mongoose.Schema(
     },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
+    // e.g. "High", "Normal" — helps residents spot urgent notices
     priority: { type: String, trim: true },
     postedAt: { type: Date, default: Date.now },
   },

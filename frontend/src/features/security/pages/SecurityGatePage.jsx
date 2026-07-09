@@ -1,4 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+/**
+ * Manual gate access logging when automated gate hardware is not used.
+ * Guards record whether a visitor, staff member, or resident was approved or denied.
+ */
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Button,
@@ -16,8 +20,13 @@ import {
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
+const LIST_LIMIT = 200;
+
 export function SecurityGatePage() {
   const [logs, setLogs] = useState([]);
+  const [visitors, setVisitors] = useState([]);
+  const [staff, setStaff] = useState([]);
+  const [residents, setResidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
@@ -26,12 +35,21 @@ export function SecurityGatePage() {
     action: "Approved",
   });
 
+  // Load recent gate events plus lookup lists for the person picker.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiGet("/gate-access?limit=80");
-      setLogs(data.items ?? []);
+      const [gateData, visitorData, staffData, residentData] = await Promise.all([
+        apiGet("/gate-access?limit=80"),
+        apiGet(`/visitors?limit=${LIST_LIMIT}`),
+        apiGet(`/staff?limit=${LIST_LIMIT}`),
+        apiGet(`/users?role=Resident&limit=${LIST_LIMIT}`),
+      ]);
+      setLogs(gateData.items ?? []);
+      setVisitors(visitorData.items ?? []);
+      setStaff(staffData.items ?? []);
+      setResidents(residentData.items ?? []);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Load failed");
     } finally {
@@ -43,6 +61,34 @@ export function SecurityGatePage() {
     load();
   }, [load]);
 
+  // Person dropdown changes based on whether the gate event is for a visitor, staff, or resident.
+  const entityOptions = useMemo(() => {
+    if (form.entityType === "Visitor") {
+      return visitors.map((v) => ({
+        id: v.id,
+        label: v.phone ? `${v.name} (${v.phone})` : v.name,
+      }));
+    }
+    if (form.entityType === "Staff") {
+      return staff.map((s) => ({
+        id: s.id,
+        label: `${s.name} (${s.role})`,
+      }));
+    }
+    return residents.map((r) => ({
+      id: r.id,
+      label: r.phone ? `${r.name} (${r.phone})` : r.name,
+    }));
+  }, [form.entityType, visitors, staff, residents]);
+
+  const entityLabel =
+    form.entityType === "Visitor"
+      ? "Visitor"
+      : form.entityType === "Staff"
+        ? "Staff member"
+        : "Resident";
+
+  // Record an approve/deny decision for the selected person at the gate.
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
@@ -50,8 +96,8 @@ export function SecurityGatePage() {
       await apiPost("/gate-access", form);
       setForm((f) => ({ ...f, entityId: "" }));
       await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed");
     }
   }
 
@@ -66,12 +112,20 @@ export function SecurityGatePage() {
           {error}
         </Alert>
       )}
-      <Stack component="form" spacing={2} direction={{ xs: "column", sm: "row" }} flexWrap="wrap" onSubmit={handleSubmit}>
+      <Stack
+        component="form"
+        spacing={2}
+        direction={{ xs: "column", sm: "row" }}
+        flexWrap="wrap"
+        onSubmit={handleSubmit}
+      >
         <TextField
           select
-          label="Entity"
+          label="Person type"
           value={form.entityType}
-          onChange={(ev) => setForm((f) => ({ ...f, entityType: ev.target.value }))}
+          onChange={(ev) =>
+            setForm((f) => ({ ...f, entityType: ev.target.value, entityId: "" }))
+          }
           sx={{ minWidth: 140 }}
         >
           <MenuItem value="Visitor">Visitor</MenuItem>
@@ -79,12 +133,23 @@ export function SecurityGatePage() {
           <MenuItem value="Resident">Resident</MenuItem>
         </TextField>
         <TextField
+          select
           required
-          label="Entity ID"
+          label={entityLabel}
           value={form.entityId}
           onChange={(ev) => setForm((f) => ({ ...f, entityId: ev.target.value }))}
-          sx={{ minWidth: 200 }}
-        />
+          sx={{ minWidth: 220 }}
+          disabled={entityOptions.length === 0}
+          helperText={
+            entityOptions.length === 0 ? `No ${entityLabel.toLowerCase()}s found` : undefined
+          }
+        >
+          {entityOptions.map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           select
           label="Action"
@@ -95,7 +160,11 @@ export function SecurityGatePage() {
           <MenuItem value="Approved">Approved</MenuItem>
           <MenuItem value="Denied">Denied</MenuItem>
         </TextField>
-        <Button type="submit" variant="contained">
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={!form.entityId}
+        >
           Record
         </Button>
       </Stack>
@@ -107,16 +176,18 @@ export function SecurityGatePage() {
           <TableRow>
             <TableCell>Time</TableCell>
             <TableCell>Type</TableCell>
-            <TableCell>Entity ID</TableCell>
+            <TableCell>Person</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {logs.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>{row.timestamp ? new Date(row.timestamp).toLocaleString() : "—"}</TableCell>
+              <TableCell>
+                {row.timestamp ? new Date(row.timestamp).toLocaleString() : "—"}
+              </TableCell>
               <TableCell>{row.entityType}</TableCell>
-              <TableCell>{row.entityId}</TableCell>
+              <TableCell>{row.entityName ?? row.entityId}</TableCell>
               <TableCell>{row.action}</TableCell>
             </TableRow>
           ))}

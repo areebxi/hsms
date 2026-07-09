@@ -1,3 +1,7 @@
+/**
+ * Records when a security guard acknowledges an SOS alert.
+ * Multiple guards may respond to the same alert.
+ */
 import mongoose from "mongoose";
 
 const sosResponseSchema = new mongoose.Schema(
@@ -12,6 +16,7 @@ const sosResponseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    // When the guard confirmed they are handling the alert
     acknowledgedAt: { type: Date, default: Date.now },
   },
   { collection: "sosResponses" }

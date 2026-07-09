@@ -1,3 +1,8 @@
+/**
+ * Admin complaint and suggestion inbox. The admin can review resident
+ * submissions, update their status (Pending / In Progress / Resolved),
+ * or delete them.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -29,8 +34,10 @@ export function AdminComplaintPage() {
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
   const [editRow, setEditRow] = useState(null);
+  // Status chosen in the edit dialog before saving.
   const [statusDraft, setStatusDraft] = useState("Pending");
 
+  // Fetch all complaints and suggestions from the API.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -44,16 +51,19 @@ export function AdminComplaintPage() {
     }
   }, []);
 
+  // Load submissions when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Open the status-update dialog for a submission.
   function openEdit(c) {
     setDialogError(null);
     setEditRow(c);
     setStatusDraft(c.status ?? "Pending");
   }
 
+  // Save the new status for the selected submission.
   async function handleEditSave(e) {
     e.preventDefault();
     if (!editRow) return;
@@ -67,6 +77,7 @@ export function AdminComplaintPage() {
     }
   }
 
+  // Delete a submission after confirmation.
   async function handleDelete(c) {
     if (!window.confirm(`Delete submission ${c.ticketId}? This cannot be undone.`)) return;
     try {

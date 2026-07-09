@@ -1,3 +1,7 @@
+/**
+ * Per-route rate limiters to reduce brute-force login and SOS spam.
+ * Limits are tunable via env vars for different deployment sizes.
+ */
 import rateLimit from "express-rate-limit";
 
 function num(envKey, fallback) {

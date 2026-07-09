@@ -1,3 +1,7 @@
+/**
+ * Zod schemas for users, units, and ownership records.
+ * Includes nested family/vehicle structures for resident profiles.
+ */
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -28,6 +32,7 @@ export const familyMemberSchema = z.object({
   phone: optionalPkPhone,
 });
 
+/** Nested family members on user create/update (gate pass, emergency contact). */
 export const familyDetailsSchema = z.object({
   members: z.array(familyMemberSchema).max(20),
 });
@@ -38,10 +43,12 @@ export const vehicleSchema = z.object({
   color: z.preprocess(emptyToUndef, z.string().max(40).optional()),
 });
 
+/** Registered vehicles for gate and parking workflows. */
 export const vehicleInfoSchema = z.object({
   vehicles: z.array(vehicleSchema).max(10),
 });
 
+/** Admin user search — role and status filters for directory management. */
 export const listUsersQuery = z.object({
   q: z.string().trim().optional(),
   role: roleEnum.optional(),
@@ -50,6 +57,7 @@ export const listUsersQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+/** New society member — password hashed in service; default role Resident. */
 export const createUserBody = z.object({
   name: z.string().trim().min(1),
   email: z.string().trim().email(),
@@ -98,6 +106,7 @@ export const patchUnitBody = z
   })
   .refine((o) => Object.keys(o).length > 0, { message: "No fields to update" });
 
+/** Ownership history filter — currentOnly=true shows active tenancies only. */
 export const listOwnershipQuery = z.object({
   unitId: objectIdString.optional(),
   userId: objectIdString.optional(),
@@ -106,6 +115,7 @@ export const listOwnershipQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+/** Assign resident to unit — endDate null means current occupancy. */
 export const createOwnershipBody = z.object({
   unitId: objectIdString,
   userId: objectIdString,

@@ -1,3 +1,4 @@
+// Sign-in page — posts credentials, stores the JWT, and routes by role.
 import { useState } from "react";
 import {
   Alert,
@@ -25,12 +26,16 @@ export function LoginPage() {
     setError(null);
     setLoading(true);
     try {
+      // 1. Call the login API with email + password.
       const data = await apiPost("/auth/login", { email, password });
+      // 2. Save the JWT so later API calls and route guards can use it.
       setStoredToken(data.token);
+      // 3. Look up where this role should land (admin, resident, etc.).
       const home = ROLE_HOME[data.user.role];
       if (!home) {
         throw new Error("Unknown role from server");
       }
+      // 4. Replace history so the user can't "back" into the login form.
       navigate(home, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");

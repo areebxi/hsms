@@ -1,3 +1,7 @@
+/**
+ * Submit complaints or suggestions for a linked unit, track status,
+ * view details, and delete tickets that are still pending.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -23,14 +27,15 @@ import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentComplaintPage() {
   const [items, setItems] = useState([]);
-  const [units, setUnits] = useState([]);
+  const [units, setUnits] = useState([]); // resident's units for the submit form
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [detailRow, setDetailRow] = useState(null);
+  const [open, setOpen] = useState(false); // new submission dialog
+  const [detailRow, setDetailRow] = useState(null); // ticket shown in the detail dialog
   const [form, setForm] = useState({ unitId: "", category: "", description: "" });
 
+  // Load this resident's complaints and the units they can file under.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -52,6 +57,7 @@ export function ResidentComplaintPage() {
     load();
   }, [load]);
 
+  // Create a new complaint or suggestion, then refresh the list.
   async function handleSubmit(e) {
     e.preventDefault();
     setDialogError(null);
@@ -65,6 +71,7 @@ export function ResidentComplaintPage() {
     }
   }
 
+  // Remove a pending ticket after the resident confirms.
   async function handleDelete(c) {
     if (!window.confirm(`Delete ticket ${c.ticketId}?`)) return;
     setError(null);

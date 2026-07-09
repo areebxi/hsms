@@ -1,3 +1,7 @@
+/**
+ * Security module HTTP routes: visitors, gate, staff, SOS, and patrols.
+ * SecurityGuard + Admin operate the gate; residents pre-approve guests and trigger SOS.
+ */
 import { Router } from "express";
 
 import { authenticateJwt, requireDb, requireRoles } from "../../middleware/auth.js";
@@ -14,6 +18,8 @@ const securityTeam = [requireDb, authenticateJwt, requireRoles("SecurityGuard", 
 const adminOnly = [requireDb, authenticateJwt, requireRoles("Admin")];
 const residentOnly = [requireDb, authenticateJwt, requireRoles("Resident")];
 const sosReaders = [requireDb, authenticateJwt, requireRoles("Resident", "SecurityGuard", "Admin")];
+
+// --- Visitors & guest pre-approvals ---
 
 router.get(
   "/visitors",
@@ -38,7 +44,7 @@ router.get(
   "/guest-approvals",
   ...authn,
   asyncHandler(async (req, res) => {
-    const q = val.listQuery.parse(req.query);
+    const q = val.listGuestApprovalsQuery.parse(req.query);
     res.json(await svc.listGuestApprovals(q, req.auth));
   })
 );
@@ -52,6 +58,8 @@ router.post(
     res.status(201).json(g);
   })
 );
+
+// --- Visitor check-in/out logs (security team) ---
 
 router.get(
   "/visitor-logs",
@@ -83,6 +91,8 @@ router.patch(
   })
 );
 
+// --- Gate access events ---
+
 router.get(
   "/gate-access",
   ...securityTeam,
@@ -101,6 +111,8 @@ router.post(
     res.status(201).json(log);
   })
 );
+
+// --- Staff roster (admin writes) & attendance (security team) ---
 
 router.get(
   "/staff",
@@ -171,6 +183,8 @@ router.patch(
   })
 );
 
+// --- SOS alerts (residents trigger; guards acknowledge) ---
+
 router.get(
   "/sos/alerts",
   ...sosReaders,
@@ -201,6 +215,8 @@ router.post(
   })
 );
 
+// --- Patrol routes, sessions, and checkpoint logging ---
+
 router.get(
   "/patrols",
   ...securityTeam,
@@ -217,6 +233,73 @@ router.post(
     const body = val.patrolLogBody.parse(req.body);
     const log = await svc.createPatrolLog(body, req.auth);
     res.status(201).json(log);
+  })
+);
+
+router.get(
+  "/patrol-routes",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    const q = val.listQuery.parse(req.query);
+    res.json(await svc.listPatrolRoutes(q));
+  })
+);
+
+router.post(
+  "/patrol-routes",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    const body = val.createPatrolRouteBody.parse(req.body);
+    const route = await svc.createPatrolRoute(body, req.auth);
+    res.status(201).json(route);
+  })
+);
+
+router.get(
+  "/patrol-sessions",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    const q = val.listPatrolSessionsQuery.parse(req.query);
+    res.json(await svc.listPatrolSessions(q, req.auth));
+  })
+);
+
+router.post(
+  "/patrol-sessions",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    const body = val.startPatrolSessionBody.parse(req.body);
+    const session = await svc.startPatrolSession(body, req.auth);
+    res.status(201).json(session);
+  })
+);
+
+router.post(
+  "/patrol-sessions/:sessionId/checkpoints",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    val.objectIdString.parse(req.params.sessionId);
+    const result = await svc.logPatrolCheckpoint(req.params.sessionId, req.auth);
+    res.status(201).json(result);
+  })
+);
+
+router.patch(
+  "/patrol-sessions/:sessionId/complete",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    val.objectIdString.parse(req.params.sessionId);
+    const result = await svc.completePatrolSession(req.params.sessionId, req.auth);
+    res.json(result);
+  })
+);
+
+router.get(
+  "/patrol-sessions/:sessionId/checkpoints",
+  ...securityTeam,
+  asyncHandler(async (req, res) => {
+    val.objectIdString.parse(req.params.sessionId);
+    res.json(await svc.listPatrolSessionCheckpoints(req.params.sessionId, req.auth));
   })
 );
 

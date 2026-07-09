@@ -1,3 +1,6 @@
+/**
+ * Authentication and authorization middleware for protected API routes.
+ */
 import mongoose from "mongoose";
 
 import { HttpError } from "../lib/httpError.js";
@@ -20,6 +23,7 @@ export function authenticateJwt(req, _res, next) {
 
   try {
     const decoded = verifyAccessToken(token);
+    // Reject tokens missing the fields we put in at login — prevents malformed payloads.
     if (
       typeof decoded !== "object" ||
       decoded === null ||
@@ -54,12 +58,14 @@ export function requireDb(_req, _res, next) {
 /**
  * @param {...string} allowedRoles
  */
+/** Role gate — use after authenticateJwt, e.g. requireRoles("Admin", "Accountant"). */
 export function requireRoles(...allowedRoles) {
   return (req, _res, next) => {
     if (!req.auth) {
       next(new HttpError(401, "Authentication required"));
       return;
     }
+    // 403 (not 401) — user is logged in but their role cannot access this action.
     if (!allowedRoles.includes(req.auth.role)) {
       next(new HttpError(403, "Insufficient permissions"));
       return;

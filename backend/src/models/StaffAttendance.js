@@ -1,3 +1,6 @@
+/**
+ * Daily check-in and check-out records for society staff at the gate.
+ */
 import mongoose from "mongoose";
 
 const staffAttendanceSchema = new mongoose.Schema(
@@ -8,12 +11,14 @@ const staffAttendanceSchema = new mongoose.Schema(
       required: true,
     },
     entryTime: { type: Date, required: true },
+    // null means the staff member has not left yet today
     exitTime: { type: Date, default: null },
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    // Calendar day this attendance row belongs to
     date: { type: Date, required: true },
   },
   { collection: "staffAttendance" }

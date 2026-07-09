@@ -1,3 +1,7 @@
+/**
+ * Book shared society facilities: pick facility, date, and time slot,
+ * see taken slots for that day, request a booking, and cancel confirmed ones.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -20,8 +24,8 @@ import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentFacilityPage() {
   const [facilities, setFacilities] = useState([]);
-  const [bookings, setBookings] = useState([]);
-  const [occupied, setOccupied] = useState([]);
+  const [bookings, setBookings] = useState([]); // this resident's bookings
+  const [occupied, setOccupied] = useState([]); // slots already taken on the chosen date
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
@@ -31,6 +35,7 @@ export function ResidentFacilityPage() {
     timeSlotEnd: "",
   });
 
+  // Load available facilities and the resident's booking history.
   const loadCore = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -49,6 +54,7 @@ export function ResidentFacilityPage() {
     loadCore();
   }, [loadCore]);
 
+  // When facility and date are set, fetch occupied slots so the resident can avoid clashes.
   const loadSlots = useCallback(async () => {
     if (!form.facilityId || !form.date) {
       setOccupied([]);
@@ -67,6 +73,7 @@ export function ResidentFacilityPage() {
     loadSlots();
   }, [loadSlots]);
 
+  // Submit a new booking request, then refresh bookings and slot availability.
   async function submitBooking(e) {
     e.preventDefault();
     setError(null);
@@ -85,6 +92,7 @@ export function ResidentFacilityPage() {
     }
   }
 
+  // Cancel a confirmed booking after confirmation, then refresh lists.
   async function cancelBooking(id) {
     if (!window.confirm("Cancel this booking?")) return;
     setError(null);

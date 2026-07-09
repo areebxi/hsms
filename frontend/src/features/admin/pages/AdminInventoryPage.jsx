@@ -1,3 +1,7 @@
+/**
+ * Admin inventory tracking. The admin can search, add, edit, and delete
+ * society equipment and fixed assets (quantity, condition, purchase date).
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -27,6 +31,7 @@ export function AdminInventoryPage() {
   const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(null);
+  // Search box input vs applied query (list reloads when appliedSearch changes).
   const [searchDraft, setSearchDraft] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
   const [form, setForm] = useState({
@@ -38,6 +43,7 @@ export function AdminInventoryPage() {
     status: "",
   });
 
+  // Fetch inventory items, optionally filtered by search query.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -52,10 +58,12 @@ export function AdminInventoryPage() {
     }
   }, [appliedSearch]);
 
+  // Reload list when the page mounts or the search filter changes.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Reset form and open the dialog for a new inventory item.
   function openCreate() {
     setDialogError(null);
     setEdit(null);
@@ -70,6 +78,7 @@ export function AdminInventoryPage() {
     setOpen(true);
   }
 
+  // Fill the form with an existing item's data for editing.
   function openEdit(row) {
     setDialogError(null);
     setEdit(row);
@@ -85,6 +94,7 @@ export function AdminInventoryPage() {
     setOpen(true);
   }
 
+  // Create or update an inventory item depending on whether edit is set.
   async function handleSave(e) {
     e.preventDefault();
     setDialogError(null);
@@ -117,6 +127,7 @@ export function AdminInventoryPage() {
     }
   }
 
+  // Remove an inventory item after confirmation.
   async function handleDelete(row) {
     if (!window.confirm(`Remove “${row.itemName}” from inventory?`)) return;
     try {

@@ -1,7 +1,11 @@
+/**
+ * Express application — middleware, health checks, and all /api/v1 route modules.
+ */
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
+// Registers all Mongoose models before any route touches the database.
 import "./models/index.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -43,6 +47,7 @@ app.use("/api/v1", complaintsCommunicationRoutes);
 app.use("/api/v1", securityVisitorsRoutes);
 app.use("/api/v1", inventoryExpensesRoutes);
 
+// Must be last — catches errors thrown in route handlers and middleware above.
 app.use(errorHandler);
 
 export default app;

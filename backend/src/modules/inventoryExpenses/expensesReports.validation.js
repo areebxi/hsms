@@ -1,3 +1,6 @@
+/**
+ * Zod schemas for expenses and financial reports.
+ */
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -5,6 +8,7 @@ export const objectIdString = z
   .string()
   .refine((id) => mongoose.Types.ObjectId.isValid(id), { message: "Invalid id" });
 
+/** Expense list date window — both ends optional for open-ended ranges. */
 export const listExpensesQuery = z.object({
   limit: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -28,6 +32,7 @@ export const patchExpenseBody = z
   })
   .refine((o) => Object.keys(o).length > 0, { message: "No fields to update" });
 
+/** Report generation — type picks aggregation; date range must be chronological. */
 export const generateReportBody = z.object({
   reportType: z.enum(["Income", "Expense", "BalanceSheet", "Defaulters"]),
   dateRangeStart: z.coerce.date(),

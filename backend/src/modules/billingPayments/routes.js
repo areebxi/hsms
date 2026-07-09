@@ -1,3 +1,7 @@
+/**
+ * Billing and payment HTTP routes.
+ * Finance roles (Admin, Accountant) manage bills; residents pay and receive notifications.
+ */
 import { Router } from "express";
 
 import { authenticateJwt, requireDb, requireRoles } from "../../middleware/auth.js";
@@ -7,8 +11,14 @@ import * as val from "./billing.validation.js";
 
 const router = Router();
 
+/** Admin or Accountant — bill issuance, edits, and defaulter reports. */
 const financeAuth = [requireDb, authenticateJwt, requireRoles("Admin", "Accountant")];
+/** Any authenticated role — residents are scoped to their units in the service. */
 const anyAuth = [requireDb, authenticateJwt];
+/** Residents only — payments and in-app notifications. */
+const residentAuth = [requireDb, authenticateJwt, requireRoles("Resident")];
+
+// --- Defaulters & bulk generation (finance only) ---
 
 router.get(
   "/bills/defaulters",
@@ -28,6 +38,8 @@ router.post(
     res.status(201).json(result);
   })
 );
+
+// --- Bill CRUD — read for any authenticated user (scoped in service); write for finance ---
 
 router.get(
   "/bills",
@@ -70,14 +82,16 @@ router.patch(
   })
 );
 
+// --- Payments — residents pay via gateway; all roles can list (scoped in service) ---
+
 router.post(
-  "/payments/card",
+  "/payments/gateway",
   requireDb,
   authenticateJwt,
   requireRoles("Resident"),
   asyncHandler(async (req, res) => {
-    const body = val.cardPaymentBody.parse(req.body);
-    const result = await billing.payBillWithCard(body, req.auth.userId);
+    const body = val.gatewayPaymentBody.parse(req.body);
+    const result = await billing.payBillViaGateway(body, req.auth.userId);
     res.status(201).json(result);
   })
 );
@@ -88,6 +102,28 @@ router.get(
   asyncHandler(async (req, res) => {
     const query = val.listPaymentsQuery.parse(req.query);
     const result = await billing.listPayments(query, req.auth);
+    res.json(result);
+  })
+);
+
+// --- In-app notifications (residents only) ---
+
+router.get(
+  "/notifications",
+  ...residentAuth,
+  asyncHandler(async (req, res) => {
+    const query = val.listNotificationsQuery.parse(req.query);
+    const result = await billing.listNotifications(query, req.auth);
+    res.json(result);
+  })
+);
+
+router.patch(
+  "/notifications/:notificationId/read",
+  ...residentAuth,
+  asyncHandler(async (req, res) => {
+    val.objectIdString.parse(req.params.notificationId);
+    const result = await billing.markNotificationRead(req.params.notificationId, req.auth);
     res.json(result);
   })
 );

@@ -74,7 +74,7 @@ Admin can access accountant and security screens via shared `ROLE_GROUPS` in `fr
 | Integration | File | Notes |
 |-------------|------|-------|
 | Notifications | `backend/src/integrations/notificationProvider.js` | Bill alerts use `channel: "app"` |
-| Dummy payment | `backend/src/integrations/dummyPaymentProvider.js` | Card flow via `POST /payments/card` |
+| Dummy payment | `backend/src/integrations/dummyPaymentProvider.js` | Gateway confirm via `POST /payments/gateway` (UI collects dummy card/bank fields only) |
 | Gate access | `backend/src/integrations/gateAccessAdapter.js` | Called on gate events and staff checkout |
 
 ---

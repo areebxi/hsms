@@ -1,3 +1,4 @@
+// Admin portal layout — nav links and outlet for all /admin/* pages.
 import { Outlet } from "react-router-dom";
 import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 

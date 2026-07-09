@@ -1,3 +1,7 @@
+/**
+ * A physical property in the society — apartment, villa, or plot.
+ * Bills and ownership are tied to units, not directly to users.
+ */
 import mongoose from "mongoose";
 
 const unitSchema = new mongoose.Schema(
@@ -9,6 +13,7 @@ const unitSchema = new mongoose.Schema(
       enum: ["Apartment", "Villa", "Plot"],
     },
     floor: { type: Number },
+    // Base amount used when generating monthly maintenance bills
     monthlyCharges: { type: Number, default: 0 },
     status: {
       type: String,

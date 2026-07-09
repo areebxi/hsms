@@ -1,3 +1,7 @@
+/**
+ * Expense ledger and financial report generation.
+ * Reports snapshot aggregated income/expenses for a date range (demo-grade balances).
+ */
 import mongoose from "mongoose";
 
 import { HttpError } from "../../lib/httpError.js";
@@ -44,6 +48,7 @@ function serializeReport(doc) {
   };
 }
 
+/** Expense list with optional date-range filter for accountant review. */
 export async function listExpenses(query) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -115,6 +120,10 @@ export async function deleteExpense(expenseId) {
   return { deleted: true };
 }
 
+/**
+ * Build and persist a financial report snapshot.
+ * Report type selects which aggregates to include (income, expenses, balance sheet, or defaulters).
+ */
 export async function generateFinancialReport(body, generatedByUserId) {
   const start = new Date(body.dateRangeStart);
   const end = new Date(body.dateRangeEnd);

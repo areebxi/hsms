@@ -1,3 +1,4 @@
+// Role names, default landing paths, and which roles can open each portal.
 /** Stored role values — match backend / MongoDB. */
 export const ROLES = {
   Admin: "Admin",

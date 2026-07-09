@@ -1,3 +1,7 @@
+/**
+ * Zod schemas for security module API inputs.
+ * Visitor log supports either approval-based check-in or walk-in with unit + visitor details.
+ */
 import mongoose from "mongoose";
 import { z } from "zod";
 
@@ -7,6 +11,7 @@ export const objectIdString = z
   .string()
   .refine((id) => mongoose.Types.ObjectId.isValid(id), { message: "Invalid id" });
 
+/** Walk-in or catalog visitor record at the gate. */
 export const createVisitorBody = z.object({
   name: z.string().trim().min(1),
   phone: optionalPkPhone,
@@ -19,6 +24,14 @@ export const listQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+export const guestApprovalStatusEnum = z.enum(["Active", "Cancelled", "Used"]);
+
+export const listGuestApprovalsQuery = listQuery.extend({
+  status: guestApprovalStatusEnum.optional(),
+  validDate: z.coerce.date().optional(),
+});
+
+/** Resident pre-approval — creates visitor + approval for a single valid date. */
 export const createGuestApprovalBody = z.object({
   visitor: createVisitorBody,
   unitId: objectIdString,
@@ -26,24 +39,45 @@ export const createGuestApprovalBody = z.object({
   status: z.enum(["Active", "Cancelled"]).optional(),
 });
 
-export const visitorLogCreateBody = z.object({
-  visitorId: objectIdString.optional(),
-  visitor: createVisitorBody.optional(),
-  unitId: objectIdString,
-  approvalId: objectIdString.optional().nullable(),
-  purpose: z.string().trim().optional(),
-  entryTime: z.coerce.date().optional(),
-}).refine((b) => b.visitorId || b.visitor, {
-  message: "Provide visitorId or visitor details",
-});
+/**
+ * Check-in payload — approvalId alone is enough; otherwise unitId + visitor required.
+ * Enforced via superRefine so guards can use either workflow.
+ */
+export const visitorLogCreateBody = z
+  .object({
+    visitorId: objectIdString.optional(),
+    visitor: createVisitorBody.optional(),
+    unitId: objectIdString.optional(),
+    approvalId: objectIdString.optional().nullable(),
+    purpose: z.string().trim().optional(),
+    entryTime: z.coerce.date().optional(),
+  })
+  .superRefine((b, ctx) => {
+    if (b.approvalId) return;
+    if (!b.unitId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "unitId required",
+        path: ["unitId"],
+      });
+    }
+    if (!b.visitorId && !b.visitor) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Provide visitorId or visitor details",
+        path: ["visitor"],
+      });
+    }
+  });
 
 export const visitorLogExitBody = z.object({
   exitTime: z.coerce.date().optional(),
 });
 
+/** Manual gate event (approve/deny) for staff, visitors, or residents. */
 export const gateEventBody = z.object({
   entityType: z.enum(["Staff", "Visitor", "Resident"]),
-  entityId: z.string().trim().min(1),
+  entityId: objectIdString,
   action: z.enum(["Approved", "Denied"]),
 });
 
@@ -73,6 +107,7 @@ export const staffAttendanceOutBody = z.object({
   exitTime: z.coerce.date().optional(),
 });
 
+/** Resident SOS — rate-limited at route level to prevent abuse. */
 export const sosCreateBody = z.object({
   locationInfo: z.string().trim().optional(),
   emergencyContacts: z.any().optional(),
@@ -89,4 +124,19 @@ export const listPatrolQuery = listQuery.extend({
 export const patrolLogBody = z.object({
   routeId: z.string().trim().min(1),
   checkpointId: z.string().trim().optional(),
+});
+
+/** Admin-defined patrol route template (checkpoint count for session progress). */
+export const createPatrolRouteBody = z.object({
+  routeId: z.string().trim().min(1),
+  checkpointCount: z.coerce.number().int().min(1).max(100),
+});
+
+export const listPatrolSessionsQuery = listQuery.extend({
+  mine: z.enum(["true", "false"]).optional(),
+  status: z.enum(["in_progress", "completed"]).optional(),
+});
+
+export const startPatrolSessionBody = z.object({
+  routeId: z.string().trim().min(1),
 });

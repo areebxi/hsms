@@ -1,7 +1,12 @@
+/**
+ * A maintenance or service request filed by a resident.
+ * Admin tracks resolution through status updates.
+ */
 import mongoose from "mongoose";
 
 const complaintSchema = new mongoose.Schema(
   {
+    // Human-readable ticket number shown to the resident
     ticketId: { type: String, required: true, unique: true, trim: true },
     submittedBy: {
       type: mongoose.Schema.Types.ObjectId,

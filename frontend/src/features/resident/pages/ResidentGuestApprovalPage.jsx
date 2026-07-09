@@ -1,3 +1,7 @@
+/**
+ * Pre-approve guests before they visit: register name, phone, unit, and date.
+ * Security can use the approval id at the gate; residents can review past approvals.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -25,11 +29,11 @@ import { formatCount } from "../../../shared/formatCount.js";
 
 export function ResidentGuestApprovalPage() {
   const [items, setItems] = useState([]);
-  const [units, setUnits] = useState([]);
+  const [units, setUnits] = useState([]); // units the resident may approve guests for
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // new approval dialog
   const [phoneError, setPhoneError] = useState(null);
   const [form, setForm] = useState({
     name: "",
@@ -38,6 +42,7 @@ export function ResidentGuestApprovalPage() {
     validDate: "",
   });
 
+  // Load existing guest approvals and linked units for the create form.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -56,6 +61,7 @@ export function ResidentGuestApprovalPage() {
     load();
   }, [load]);
 
+  // Guest approval flow: validate phone, post visitor + unit + date, then refresh the table.
   async function handleCreate(e) {
     e.preventDefault();
     setDialogError(null);

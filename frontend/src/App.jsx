@@ -1,19 +1,20 @@
+// Top-level route table — maps URLs to role portals and wraps each area with auth guards.
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./shared/layout/AppShell.jsx";
 import { LoginPage } from "./features/auth/pages/LoginPage.jsx";
 import { AdminLayout } from "./features/admin/AdminLayout.jsx";
 import { AdminOverviewPage } from "./features/admin/pages/AdminOverviewPage.jsx";
-import { MembersPage } from "./features/admin/pages/MembersPage.jsx";
-import { UnitsPage } from "./features/admin/pages/UnitsPage.jsx";
-import { OwnershipPage } from "./features/admin/pages/OwnershipPage.jsx";
+import { AdminMembersPage } from "./features/admin/pages/AdminMembersPage.jsx";
+import { AdminUnitsPage } from "./features/admin/pages/AdminUnitsPage.jsx";
+import { AdminOwnershipPage } from "./features/admin/pages/AdminOwnershipPage.jsx";
 import { AdminNoticesPage } from "./features/admin/pages/AdminNoticesPage.jsx";
 import { AdminComplaintPage } from "./features/admin/pages/AdminComplaintPage.jsx";
 import { AdminPollsPage } from "./features/admin/pages/AdminPollsPage.jsx";
 import { AccountantLayout } from "./features/accountant/AccountantLayout.jsx";
 import { AccountantOverviewPage } from "./features/accountant/pages/AccountantOverviewPage.jsx";
-import { FinanceBillsPage } from "./features/accountant/pages/FinanceBillsPage.jsx";
-import { ExpensesPage } from "./features/accountant/pages/ExpensesPage.jsx";
-import { ReportsPage } from "./features/accountant/pages/ReportsPage.jsx";
+import { AccountantBillsPage } from "./features/accountant/pages/AccountantBillsPage.jsx";
+import { AccountantExpensesPage } from "./features/accountant/pages/AccountantExpensesPage.jsx";
+import { AccountantReportsPage } from "./features/accountant/pages/AccountantReportsPage.jsx";
 import { ResidentLayout } from "./features/resident/ResidentLayout.jsx";
 import { ResidentOverviewPage } from "./features/resident/pages/ResidentOverviewPage.jsx";
 import { ResidentBillsPage } from "./features/resident/pages/ResidentBillsPage.jsx";
@@ -26,7 +27,7 @@ import { SecurityVisitorLogsPage } from "./features/security/pages/SecurityVisit
 import { SecurityGatePage } from "./features/security/pages/SecurityGatePage.jsx";
 import { SecurityStaffAttendancePage } from "./features/security/pages/SecurityStaffAttendancePage.jsx";
 import { SecuritySOSPage } from "./features/security/pages/SecuritySOSPage.jsx";
-import { SecurityPatrolPage } from "./features/security/pages/SecurityPatrolPage.jsx";
+import { SecurityPatrolsPage } from "./features/security/pages/SecurityPatrolsPage.jsx";
 import { AdminStaffPage } from "./features/admin/pages/AdminStaffPage.jsx";
 import { AdminFacilitiesPage } from "./features/admin/pages/AdminFacilitiesPage.jsx";
 import { AdminInventoryPage } from "./features/admin/pages/AdminInventoryPage.jsx";
@@ -42,7 +43,9 @@ export default function App() {
   return (
     <AppShell>
       <Routes>
+        {/* "/" sends logged-in users to their portal, everyone else to login */}
         <Route path="/" element={<RootLanding />} />
+        {/* Login is guest-only — already signed in? GuestRoute bounces you to your home */}
         <Route
           path="/login"
           element={
@@ -51,6 +54,7 @@ export default function App() {
             </GuestRoute>
           }
         />
+        {/* Each portal layout nests child routes; RequireRole checks JWT + role before rendering */}
         <Route
           path="/admin"
           element={
@@ -60,9 +64,9 @@ export default function App() {
           }
         >
           <Route index element={<AdminOverviewPage />} />
-          <Route path="members" element={<MembersPage />} />
-          <Route path="units" element={<UnitsPage />} />
-          <Route path="ownership" element={<OwnershipPage />} />
+          <Route path="members" element={<AdminMembersPage />} />
+          <Route path="units" element={<AdminUnitsPage />} />
+          <Route path="ownership" element={<AdminOwnershipPage />} />
           <Route path="notices" element={<AdminNoticesPage />} />
           <Route path="complaints" element={<AdminComplaintPage />} />
           <Route path="polls" element={<AdminPollsPage />} />
@@ -79,9 +83,9 @@ export default function App() {
           }
         >
           <Route index element={<AccountantOverviewPage />} />
-          <Route path="bills" element={<FinanceBillsPage />} />
-          <Route path="expenses" element={<ExpensesPage />} />
-          <Route path="reports" element={<ReportsPage />} />
+          <Route path="bills" element={<AccountantBillsPage />} />
+          <Route path="expenses" element={<AccountantExpensesPage />} />
+          <Route path="reports" element={<AccountantReportsPage />} />
         </Route>
         <Route
           path="/resident"
@@ -113,8 +117,9 @@ export default function App() {
           <Route path="gate" element={<SecurityGatePage />} />
           <Route path="staff-attendance" element={<SecurityStaffAttendancePage />} />
           <Route path="sos" element={<SecuritySOSPage />} />
-          <Route path="patrols" element={<SecurityPatrolPage />} />
+          <Route path="patrols" element={<SecurityPatrolsPage />} />
         </Route>
+        {/* Unknown paths fall back to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </AppShell>

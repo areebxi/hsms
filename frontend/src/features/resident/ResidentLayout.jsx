@@ -1,3 +1,4 @@
+// Resident portal layout — self-service pages for society members.
 import { Outlet } from "react-router-dom";
 import { PortalLayout } from "../../shared/layout/PortalLayout.jsx";
 

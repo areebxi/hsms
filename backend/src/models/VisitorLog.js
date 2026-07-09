@@ -1,3 +1,7 @@
+/**
+ * Record of a visitor entering and leaving the society.
+ * Created by security at the gate.
+ */
 import mongoose from "mongoose";
 
 const visitorLogSchema = new mongoose.Schema(
@@ -18,7 +22,9 @@ const visitorLogSchema = new mongoose.Schema(
       required: true,
     },
     entryTime: { type: Date, required: true },
+    // null means the visitor is still inside the society
     exitTime: { type: Date, default: null },
+    // Set when entry was backed by a pre-approved guest pass
     approvalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "GuestApproval",

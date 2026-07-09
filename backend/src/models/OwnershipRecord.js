@@ -1,3 +1,7 @@
+/**
+ * Links a resident to a unit they own or rent.
+ * Tracks who lives where and for how long.
+ */
 import mongoose from "mongoose";
 
 const ownershipRecordSchema = new mongoose.Schema(
@@ -12,12 +16,14 @@ const ownershipRecordSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    // Owner = property holder; Tenant = renter
     ownershipType: {
       type: String,
       required: true,
       enum: ["Owner", "Tenant"],
     },
     startDate: { type: Date, required: true },
+    // null means the person still occupies the unit
     endDate: { type: Date, default: null },
   },
   { collection: "ownershipRecords" }

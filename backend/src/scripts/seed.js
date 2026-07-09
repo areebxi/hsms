@@ -1,3 +1,7 @@
+/**
+ * One-time bootstrap script — creates the default Admin user if none exists.
+ * Run manually: `node src/scripts/seed.js` (requires MONGODB_URI).
+ */
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";

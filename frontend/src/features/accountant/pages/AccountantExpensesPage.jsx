@@ -1,3 +1,7 @@
+/**
+ * Society expense ledger. Accountants can add, edit, and delete spending records
+ * by category (salaries, repairs, admin, etc.) for use in financial reports.
+ */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -37,7 +41,7 @@ function day(iso) {
   }
 }
 
-export function ExpensesPage() {
+export function AccountantExpensesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,6 +55,7 @@ export function ExpensesPage() {
     description: "",
   });
 
+  // Keep legacy or custom categories visible when editing an older expense record.
   const categorySelectOptions = useMemo(() => {
     const cur = (form.category ?? "").trim();
     if (cur && !EXPENSE_CATEGORY_OPTIONS.includes(cur)) {
@@ -59,6 +64,7 @@ export function ExpensesPage() {
     return EXPENSE_CATEGORY_OPTIONS;
   }, [form.category]);
 
+  // Load the expense ledger from the API.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -79,6 +85,7 @@ export function ExpensesPage() {
   function openCreate() {
     setDialogError(null);
     setEditId(null);
+    // Reset form with a default category for a new expense entry.
     setForm({
       category: EXPENSE_CATEGORY_OPTIONS[0] ?? "",
       amount: "",
@@ -100,6 +107,7 @@ export function ExpensesPage() {
     setOpen(true);
   }
 
+  // Create a new expense or update an existing one, then refresh the table.
   async function handleSubmit(e) {
     e.preventDefault();
     setDialogError(null);
@@ -122,6 +130,7 @@ export function ExpensesPage() {
     }
   }
 
+  // Remove an expense entry after user confirmation.
   async function handleDelete(row) {
     if (!window.confirm("Delete this expense?")) return;
     setError(null);

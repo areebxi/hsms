@@ -1,3 +1,4 @@
+// Handles "/" — the first page users hit when they open the app.
 import { Navigate } from "react-router-dom";
 import { CircularProgress, Stack } from "@mui/material";
 
@@ -18,5 +19,6 @@ export function RootLanding() {
     return <Navigate to={session.home} replace />;
   }
 
+  // Not signed in — send to login.
   return <Navigate to="/login" replace />;
 }

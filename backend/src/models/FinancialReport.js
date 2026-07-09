@@ -1,3 +1,7 @@
+/**
+ * A generated financial summary for a date range.
+ * Stores a snapshot so reports can be viewed later without recalculating.
+ */
 import mongoose from "mongoose";
 
 const financialReportSchema = new mongoose.Schema(
@@ -14,7 +18,9 @@ const financialReportSchema = new mongoose.Schema(
     },
     dateRangeStart: { type: Date, required: true },
     dateRangeEnd: { type: Date, required: true },
+    // Optional link to an exported file (PDF, CSV)
     snapshotUri: { type: String, trim: true },
+    // Cached report data for quick reload in the app
     snapshotJson: { type: mongoose.Schema.Types.Mixed },
   },
   { collection: "financialReports", timestamps: true }

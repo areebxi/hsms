@@ -1,3 +1,7 @@
+/**
+ * A society vote or survey created by admin.
+ * Residents submit answers via the Vote model.
+ */
 import mongoose from "mongoose";
 
 const pollSchema = new mongoose.Schema(
@@ -6,6 +10,7 @@ const pollSchema = new mongoose.Schema(
     options: { type: [String], required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
+    // Closed polls no longer accept votes
     status: {
       type: String,
       required: true,

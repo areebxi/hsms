@@ -1,3 +1,7 @@
+/**
+ * Helper workers who regularly enter the society — maids, drivers, vendors, etc.
+ * Often assigned to a specific unit.
+ */
 import mongoose from "mongoose";
 
 const staffSchema = new mongoose.Schema(
@@ -9,6 +13,7 @@ const staffSchema = new mongoose.Schema(
       enum: ["Maid", "Driver", "Vendor", "Other"],
     },
     phone: { type: String, trim: true },
+    // Unit this person primarily serves; null if society-wide
     assignedUnitId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Unit",

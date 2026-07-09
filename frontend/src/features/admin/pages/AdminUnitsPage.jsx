@@ -1,3 +1,7 @@
+/**
+ * Admin page for society units (flats, villas, plots). The admin can list,
+ * add, edit, and delete units and set type, floor, monthly charges, and status.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -24,13 +28,15 @@ import { formatCount } from "../../../shared/formatCount.js";
 const UNIT_TYPES = ["Apartment", "Villa", "Plot"];
 const OCCUPANCY = ["Occupied", "Vacant"];
 
-export function UnitsPage() {
+export function AdminUnitsPage() {
+  // Unit list from the API and total count for the caption.
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
 
+  // Dialog visibility and which row is being edited.
   const [createOpen, setCreateOpen] = useState(false);
   const [editRow, setEditRow] = useState(null);
 
@@ -41,8 +47,10 @@ export function UnitsPage() {
     monthlyCharges: "",
     status: "Vacant",
   };
+  // Form fields for the create/edit dialog.
   const [form, setForm] = useState(emptyForm);
 
+  // Fetch all units from the API.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -58,10 +66,12 @@ export function UnitsPage() {
     }
   }, []);
 
+  // Load units when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Create a new unit and refresh the list.
   async function handleCreate(e) {
     e.preventDefault();
     setDialogError(null);
@@ -81,6 +91,7 @@ export function UnitsPage() {
     }
   }
 
+  // Update the selected unit and refresh the list.
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
@@ -101,6 +112,7 @@ export function UnitsPage() {
     }
   }
 
+  // Fill the form with an existing unit's data for editing.
   function openEdit(row) {
     setDialogError(null);
     setEditRow(row);
@@ -113,6 +125,7 @@ export function UnitsPage() {
     });
   }
 
+  // Delete a unit after confirmation (only allowed if no ownership history).
   async function handleDelete(row) {
     if (
       !window.confirm(
@@ -134,7 +147,7 @@ export function UnitsPage() {
     <Stack spacing={2}>
       <Typography variant="h6">Units</Typography>
       <Typography variant="body2" color="text.secondary">
-        Manage unit details and monthly charges. Occupancy updates automatically from ownership records.
+        Manage unit details and monthly maintenance charges. Occupancy updates automatically from ownership records.
       </Typography>
 
       <Stack direction="row" spacing={1}>
@@ -165,7 +178,7 @@ export function UnitsPage() {
             <TableCell>Number</TableCell>
             <TableCell>Type</TableCell>
             <TableCell>Floor</TableCell>
-            <TableCell>Monthly charges</TableCell>
+            <TableCell>Monthly maintenance charges</TableCell>
             <TableCell>Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -237,7 +250,7 @@ export function UnitsPage() {
                 onChange={(ev) => setForm((f) => ({ ...f, floor: ev.target.value }))}
               />
               <TextField
-                label="Monthly charges"
+                label="Monthly maintenance charges"
                 type="number"
                 value={form.monthlyCharges}
                 onChange={(ev) => setForm((f) => ({ ...f, monthlyCharges: ev.target.value }))}
@@ -312,7 +325,7 @@ export function UnitsPage() {
                 onChange={(ev) => setForm((f) => ({ ...f, floor: ev.target.value }))}
               />
               <TextField
-                label="Monthly charges"
+                label="Monthly maintenance charges"
                 type="number"
                 value={form.monthlyCharges}
                 onChange={(ev) => setForm((f) => ({ ...f, monthlyCharges: ev.target.value }))}

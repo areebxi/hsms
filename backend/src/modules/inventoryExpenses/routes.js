@@ -1,3 +1,7 @@
+/**
+ * Inventory, expenses, reports, facilities, and bookings HTTP routes.
+ * Finance roles handle money; admin manages inventory/facilities; residents book facilities.
+ */
 import { Router } from "express";
 
 import { authenticateJwt, requireDb, requireRoles } from "../../middleware/auth.js";
@@ -16,6 +20,8 @@ const authn = [requireDb, authenticateJwt];
 const adminOnly = [requireDb, authenticateJwt, requireRoles("Admin")];
 const bookingReaders = [requireDb, authenticateJwt, requireRoles("Admin", "Accountant", "Resident")];
 const residentOnly = [requireDb, authenticateJwt, requireRoles("Resident")];
+
+// --- Expenses & financial reports (Admin + Accountant) ---
 
 router.get(
   "/expenses",
@@ -98,6 +104,8 @@ router.get(
   })
 );
 
+// --- Facilities (read: authenticated; write: admin) & slot availability ---
+
 router.get(
   "/facilities",
   ...authn,
@@ -146,6 +154,8 @@ router.get(
   })
 );
 
+// --- Bookings (residents create; readers can list/cancel per service rules) ---
+
 router.get(
   "/bookings",
   ...bookingReaders,
@@ -174,6 +184,8 @@ router.patch(
     res.json(await fb.patchBooking(req.params.bookingId, body, req.auth));
   })
 );
+
+// --- Inventory (admin only) ---
 
 router.get(
   "/inventory",

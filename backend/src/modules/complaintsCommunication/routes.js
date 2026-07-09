@@ -1,3 +1,7 @@
+/**
+ * Complaints, notices, and polls HTTP routes.
+ * Notices and polls are admin-managed; complaints and votes are resident-facing.
+ */
 import { Router } from "express";
 
 import { authenticateJwt, requireDb, requireRoles } from "../../middleware/auth.js";
@@ -10,6 +14,8 @@ const router = Router();
 const anyAuth = [requireDb, authenticateJwt];
 const adminOnly = [requireDb, authenticateJwt, requireRoles("Admin")];
 const residentOnly = [requireDb, authenticateJwt, requireRoles("Resident")];
+
+// --- Notices (read: all; write: admin) ---
 
 router.get(
   "/notices",
@@ -62,6 +68,8 @@ router.delete(
   })
 );
 
+// --- Complaints (residents submit; admin updates status; delete rules in service) ---
+
 router.get(
   "/complaints",
   ...anyAuth,
@@ -112,6 +120,8 @@ router.delete(
     res.json(result);
   })
 );
+
+// --- Polls & votes (admin manages polls; residents vote) ---
 
 router.get(
   "/polls",

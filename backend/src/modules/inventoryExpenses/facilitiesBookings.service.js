@@ -1,3 +1,7 @@
+/**
+ * Shared facilities and resident booking logic.
+ * Prevents double-booking via time-slot overlap checks on the same facility and day.
+ */
 import mongoose from "mongoose";
 
 import { HttpError } from "../../lib/httpError.js";
@@ -65,6 +69,7 @@ function intervalsOverlap(a0, a1, b0, b1) {
   return a0 < b1 && b0 < a1;
 }
 
+/** Reject overlapping bookings so two residents cannot reserve the same slot. */
 async function assertNoOverlap(facilityId, dateInput, startStr, endStr, excludeBookingId = null) {
   const { start, end } = utcDayRange(dateInput);
   const q = {
@@ -87,6 +92,7 @@ async function assertNoOverlap(facilityId, dateInput, startStr, endStr, excludeB
   }
 }
 
+/** Residents only see Active facilities unless they filter explicitly. */
 export async function listFacilities(query, auth) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -123,6 +129,7 @@ export async function patchFacility(facilityId, body) {
   return serializeFacility(f);
 }
 
+/** Block deletion when future or active bookings would be orphaned. */
 export async function deleteFacility(facilityId) {
   if (!mongoose.Types.ObjectId.isValid(facilityId)) throw new HttpError(400, "Invalid facility id");
   const n = await FacilityBooking.countDocuments({
@@ -158,6 +165,7 @@ export async function listOccupiedSlots(facilityId, dateInput) {
   };
 }
 
+/** Residents see only their bookings; staff see all. */
 export async function listBookings(query, auth) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -194,6 +202,7 @@ export async function listBookings(query, auth) {
   };
 }
 
+/** Resident books an Active facility — overlap check runs before confirm. */
 export async function createBooking(body, auth) {
   if (auth.role !== "Resident") throw new HttpError(403, "Only residents can create bookings");
 
@@ -221,6 +230,7 @@ export async function createBooking(body, auth) {
   return serializeBooking(populated, true);
 }
 
+/** Cancel only — owner or admin; frees the slot for others. */
 export async function patchBooking(bookingId, body, auth) {
   if (!mongoose.Types.ObjectId.isValid(bookingId)) throw new HttpError(400, "Invalid booking id");
   const b = await FacilityBooking.findById(bookingId).lean();

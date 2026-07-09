@@ -1,3 +1,7 @@
+/**
+ * A person who can log into the housing society system — admin, resident,
+ * accountant, or security guard.
+ */
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -11,14 +15,19 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     phone: { type: String, trim: true },
+    // Stored hashed; excluded from normal queries for security
     passwordHash: { type: String, required: true, select: false },
+    // Determines which dashboard and permissions the user gets
     role: {
       type: String,
       required: true,
       enum: ["Admin", "Resident", "Accountant", "SecurityGuard"],
     },
+    // Optional household info (e.g. family members living in the unit)
     familyDetails: { type: mongoose.Schema.Types.Mixed },
+    // Optional vehicle details for gate access
     vehicleInfo: { type: mongoose.Schema.Types.Mixed },
+    // Inactive users cannot sign in
     status: {
       type: String,
       enum: ["Active", "Inactive"],

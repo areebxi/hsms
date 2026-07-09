@@ -1,3 +1,4 @@
+// Route guard — only renders children when the user's role is in the allowed list.
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { CircularProgress, Stack } from "@mui/material";
@@ -14,10 +15,12 @@ export function RequireRole({ children, roles }) {
 
   useEffect(() => {
     const allowed = roles ?? [];
+    // No token at all — send straight to login.
     if (!getStoredToken()) {
       setPhase("no-token");
       return;
     }
+    // Ask the server who this token belongs to, then check the role list.
     apiGet("/auth/me")
       .then((u) => {
         setUserRole(u.role);
@@ -39,6 +42,7 @@ export function RequireRole({ children, roles }) {
     return <Navigate to="/login" replace />;
   }
 
+  // Wrong portal for this role — redirect to their own home instead of showing a blank page.
   if (phase === "wrong-role") {
     const dest = ROLE_HOME[userRole] ?? "/login";
     return <Navigate to={dest} replace />;

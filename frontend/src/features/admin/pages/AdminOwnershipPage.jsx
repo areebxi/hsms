@@ -1,3 +1,8 @@
+/**
+ * Admin page for ownership and tenancy records. The admin can link members to
+ * units as owners or tenants, filter current vs past records, edit dates,
+ * end an active tenancy, or delete a record.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -24,6 +29,7 @@ import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client
 import { ROLES } from "../../../shared/constants/roles.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
+// Format a date for display in the ownership table.
 function formatDay(iso) {
   if (!iso) return "—";
   try {
@@ -33,6 +39,7 @@ function formatDay(iso) {
   }
 }
 
+// Convert ISO date to YYYY-MM-DD for date inputs.
 function isoToDateInput(iso) {
   if (!iso) return "";
   try {
@@ -42,18 +49,22 @@ function isoToDateInput(iso) {
   }
 }
 
-export function OwnershipPage() {
+export function AdminOwnershipPage() {
+  // Ownership records shown in the table.
   const [records, setRecords] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
+  // When true, only show records with no end date (current occupants).
   const [currentOnly, setCurrentOnly] = useState(true);
 
+  // Dropdown options for unit and member pickers in create/edit dialogs.
   const [units, setUnits] = useState([]);
   const [users, setUsers] = useState([]);
 
   const [createOpen, setCreateOpen] = useState(false);
+  // Fields for assigning a member to a unit.
   const [createForm, setCreateForm] = useState({
     unitId: "",
     userId: "",
@@ -63,6 +74,7 @@ export function OwnershipPage() {
   });
 
   const [editRow, setEditRow] = useState(null);
+  // Fields for editing an existing ownership record.
   const [editForm, setEditForm] = useState({
     unitId: "",
     userId: "",
@@ -71,6 +83,7 @@ export function OwnershipPage() {
     endDate: "",
   });
 
+  // Load units and residents for the create/edit dropdowns.
   const loadLists = useCallback(async () => {
     try {
       const [uData, userData] = await Promise.all([
@@ -84,6 +97,7 @@ export function OwnershipPage() {
     }
   }, []);
 
+  // Fetch ownership records; respects the currentOnly filter.
   const loadRecords = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -101,14 +115,17 @@ export function OwnershipPage() {
     }
   }, [currentOnly]);
 
+  // Load picklists once when the page mounts.
   useEffect(() => {
     loadLists();
   }, [loadLists]);
 
+  // Reload records when the filter changes or after mutations.
   useEffect(() => {
     loadRecords();
   }, [loadRecords]);
 
+  // Assign a member to a unit with start (and optional end) dates.
   async function handleCreate(e) {
     e.preventDefault();
     if (!createForm.unitId || !createForm.userId || !createForm.startDate) {
@@ -142,6 +159,7 @@ export function OwnershipPage() {
     }
   }
 
+  // Save changes to an existing ownership record.
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow || !editForm.unitId || !editForm.userId || !editForm.startDate) {
@@ -166,6 +184,7 @@ export function OwnershipPage() {
     }
   }
 
+  // Open the edit dialog with the selected record's data.
   function openEdit(row) {
     setDialogError(null);
     setEditRow(row);
@@ -178,6 +197,7 @@ export function OwnershipPage() {
     });
   }
 
+  // Remove an ownership record; unit occupancy is recalculated on the server.
   async function handleDelete(row) {
     if (!window.confirm("Delete this ownership record? Unit occupancy will be recalculated.")) return;
     setError(null);
@@ -190,6 +210,7 @@ export function OwnershipPage() {
     }
   }
 
+  // Close an active record by setting its end date to today.
   async function endTenancy(row) {
     if (!window.confirm("Set end date to today for this record?")) return;
     setError(null);

@@ -1,3 +1,4 @@
+// Shared shell for every role portal — header, nav pills, logout, and page content slot.
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { LogoutButton } from "./LogoutButton.jsx";
@@ -35,6 +36,7 @@ export function PortalLayout({ title, subtitle, links, children }) {
         </Stack>
       </Stack>
 
+      {/* Pill nav — each portal passes its own link list; active route gets highlighted */}
       <Box
         sx={{
           display: "flex",
@@ -73,6 +75,7 @@ export function PortalLayout({ title, subtitle, links, children }) {
 
       <Divider />
 
+      {/* Child route page renders here (Outlet from each role Layout) */}
       {children}
     </Stack>
   );

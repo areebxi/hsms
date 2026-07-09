@@ -1,3 +1,7 @@
+/**
+ * Admin polls and voting. The admin can create polls with options and date
+ * windows, edit them, close open polls, or delete them (and all votes).
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -21,6 +25,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { formatCount } from "../../../shared/formatCount.js";
 
+// Convert ISO date to value suitable for datetime-local input.
 function isoToDatetimeLocal(iso) {
   if (!iso) return "";
   try {
@@ -38,6 +43,7 @@ export function AdminPollsPage() {
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
+  // Create form: options are entered as one choice per line.
   const [form, setForm] = useState({
     question: "",
     optionsText: "Yes\nNo",
@@ -46,6 +52,7 @@ export function AdminPollsPage() {
   });
 
   const [editRow, setEditRow] = useState(null);
+  // Edit form fields for an existing poll.
   const [editForm, setEditForm] = useState({
     question: "",
     optionsText: "Yes\nNo",
@@ -54,6 +61,7 @@ export function AdminPollsPage() {
     status: "Open",
   });
 
+  // Fetch all polls regardless of open/closed status.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -67,10 +75,12 @@ export function AdminPollsPage() {
     }
   }, []);
 
+  // Load polls when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Create a new poll; splits optionsText into an array (min 2 options).
   async function handleCreate(e) {
     e.preventDefault();
     const options = form.optionsText
@@ -97,6 +107,7 @@ export function AdminPollsPage() {
     }
   }
 
+  // Open the edit dialog with the poll's current data.
   function openEdit(p) {
     setDialogError(null);
     setEditRow(p);
@@ -109,6 +120,7 @@ export function AdminPollsPage() {
     });
   }
 
+  // Save changes to an existing poll.
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
@@ -136,6 +148,7 @@ export function AdminPollsPage() {
     }
   }
 
+  // Delete a poll and all its votes after confirmation.
   async function handleDelete(p) {
     if (!window.confirm(`Delete poll “${p.question}”? All votes will be removed.`)) return;
     setError(null);
@@ -147,6 +160,7 @@ export function AdminPollsPage() {
     }
   }
 
+  // Mark an open poll as Closed so residents can no longer vote.
   async function closePoll(id) {
     if (!window.confirm("Close this poll? No further votes.")) return;
     setError(null);

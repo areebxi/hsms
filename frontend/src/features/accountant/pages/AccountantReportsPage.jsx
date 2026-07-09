@@ -1,3 +1,7 @@
+/**
+ * Financial report generation. Accountants pick a report type and date range,
+ * run the report, view the snapshot, and browse previously saved reports.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -27,7 +31,7 @@ function day(iso) {
   }
 }
 
-export function ReportsPage() {
+export function AccountantReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,6 +42,7 @@ export function ReportsPage() {
     end: "",
   });
 
+  // Load previously generated reports for the history table.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -55,6 +60,8 @@ export function ReportsPage() {
     load();
   }, [load]);
 
+  // Ask the server to build a report for the selected type and date range.
+  // The response includes a snapshot for immediate display and is saved to history.
   async function handleGenerate(e) {
     e.preventDefault();
     setError(null);

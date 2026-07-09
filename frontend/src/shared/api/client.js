@@ -1,3 +1,4 @@
+// Thin fetch wrapper around the backend API — attaches the JWT and normalises errors.
 const API_BASE = "/api/v1";
 
 const TOKEN_KEY = "hsms_token";
@@ -6,6 +7,7 @@ export function getStoredToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+// Login writes the token; logout and failed /auth/me clear it.
 export function setStoredToken(token) {
   if (token) {
     localStorage.setItem(TOKEN_KEY, token);
@@ -14,6 +16,7 @@ export function setStoredToken(token) {
   }
 }
 
+// Every request sends JSON accept headers; logged-in calls also send Bearer token.
 function authHeaders() {
   const headers = { Accept: "application/json" };
   const token = getStoredToken();
@@ -29,6 +32,7 @@ export async function apiGet(path) {
     headers: authHeaders(),
   });
   const data = await res.json().catch(() => ({}));
+  // Non-2xx responses become thrown errors with the server's message when available.
   if (!res.ok) {
     throw new Error(data.error || res.statusText);
   }

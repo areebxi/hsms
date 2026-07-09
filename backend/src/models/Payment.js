@@ -1,3 +1,7 @@
+/**
+ * Records money received against a bill.
+ * Each bill can have at most one payment (enforced by unique index).
+ */
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
@@ -13,7 +17,9 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
     amountPaid: { type: Number, required: true },
+    // e.g. "Cash", "Bank Transfer", "Online"
     paymentMethod: { type: String, required: true, trim: true },
+    // External reference from bank or payment gateway
     transactionRef: { type: String, trim: true },
     paidAt: { type: Date, default: Date.now },
   },

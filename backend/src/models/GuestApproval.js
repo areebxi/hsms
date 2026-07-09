@@ -1,3 +1,7 @@
+/**
+ * Pre-approval from a resident for an expected guest on a specific date.
+ * Security checks this before allowing entry at the gate.
+ */
 import mongoose from "mongoose";
 
 const guestApprovalSchema = new mongoose.Schema(
@@ -17,7 +21,9 @@ const guestApprovalSchema = new mongoose.Schema(
       ref: "Unit",
       required: true,
     },
+    // Guest is only valid for entry on this calendar day
     validDate: { type: Date, required: true },
+    // e.g. "Pending", "Approved", "Expired"
     status: { type: String, required: true, trim: true },
   },
   { collection: "guestApprovals" }

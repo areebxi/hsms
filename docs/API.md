@@ -61,8 +61,10 @@ HSMS exposes a JSON REST API under **`/api/v1`**. All protected routes require a
 | `GET` | `/bills/defaulters` | Admin, Accountant | Defaulter summary. |
 | `GET` | `/bills/:billId` | Any | Bill detail (role-scoped). |
 | `PATCH` | `/bills/:billId` | Admin, Accountant | Update bill fields. |
-| `POST` | `/payments/card` | Resident | Dummy card payment; marks bill paid. |
+| `POST` | `/payments/gateway` | Resident | Dummy gateway pay; body `{ billId, paymentMethod? }` (`Visa` \| `Mastercard` \| `NetBanking`). UI collects card/bank fields locally only; API marks bill paid. |
 | `GET` | `/payments` | Any | List payments (role-scoped). |
+| `GET` | `/notifications` | Resident | List in-app notifications (`?unreadOnly=true` default). |
+| `PATCH` | `/notifications/:notificationId/read` | Resident | Mark notification read (dismiss). |
 
 ---
 

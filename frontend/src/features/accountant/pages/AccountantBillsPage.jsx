@@ -1,3 +1,8 @@
+/**
+ * Bills management for accountants. Supports bulk maintenance bill generation,
+ * one-off utility bills per unit, and tracking overdue unpaid bills (defaulters).
+ * Residents pay bills from their own portal; this page is for issuing and monitoring.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -39,12 +44,7 @@ function day(iso) {
   }
 }
 
-const BILL_TYPE_OPTIONS = [
-  { value: "Maintenance", label: "Maintenance" },
-  { value: "Utility", label: "Utility bill" },
-];
-
-export function FinanceBillsPage() {
+export function AccountantBillsPage() {
   const [bills, setBills] = useState([]);
   const [defaulters, setDefaulters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,18 +52,18 @@ export function FinanceBillsPage() {
   const [dialogError, setDialogError] = useState(null);
 
   const [genOpen, setGenOpen] = useState(false);
-  const [genForm, setGenForm] = useState({ billType: "Maintenance", dueDate: "" });
+  const [genForm, setGenForm] = useState({ dueDate: "" });
 
   const [singleOpen, setSingleOpen] = useState(false);
   const [singleForm, setSingleForm] = useState({
     unitId: "",
-    billType: "Utility",
     amount: "",
     dueDate: "",
   });
 
   const [units, setUnits] = useState([]);
 
+  // Fetch recent bills, overdue defaulters, and unit list (needed for utility bill form).
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -87,12 +87,14 @@ export function FinanceBillsPage() {
     load();
   }, [load]);
 
+  // Bulk-create maintenance bills for every occupied unit using each unit's monthly charge.
+  // The server skips duplicates for the same unit, bill type, and due date.
   async function handleGenerate(e) {
     e.preventDefault();
     setDialogError(null);
     try {
       await apiPost("/bills/generate", {
-        billType: genForm.billType,
+        billType: "Maintenance",
         dueDate: new Date(genForm.dueDate).toISOString(),
       });
       setGenOpen(false);
@@ -102,13 +104,14 @@ export function FinanceBillsPage() {
     }
   }
 
+  // Create a single utility bill for one unit with a custom amount and due date.
   async function handleSingleCreate(e) {
     e.preventDefault();
     setDialogError(null);
     try {
       await apiPost("/bills", {
         unitId: singleForm.unitId,
-        billType: singleForm.billType,
+        billType: "Utility",
         amount: Number(singleForm.amount),
         dueDate: new Date(singleForm.dueDate).toISOString(),
       });
@@ -126,7 +129,7 @@ export function FinanceBillsPage() {
           Bills & defaulters
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Create maintenance and utility bills, and see what is overdue.
+          Generate maintenance bills for occupied units, add utility bills, and see what is overdue.
         </Typography>
       </Box>
 
@@ -138,7 +141,7 @@ export function FinanceBillsPage() {
             setGenOpen(true);
           }}
         >
-          Generate (occupied units)
+          Generate maintenance bills
         </Button>
         <Button
           variant="outlined"
@@ -147,7 +150,7 @@ export function FinanceBillsPage() {
             setSingleOpen(true);
           }}
         >
-          Add single bill
+          Add utility bill
         </Button>
         <Button variant="outlined" onClick={load}>
           Refresh
@@ -251,23 +254,10 @@ export function FinanceBillsPage() {
         maxWidth="sm"
       >
         <form onSubmit={handleGenerate}>
-          <DialogTitle>Generate bills for occupied units</DialogTitle>
+          <DialogTitle>Generate maintenance bills for occupied units</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
-              <TextField
-                select
-                required
-                label="Bill type"
-                value={genForm.billType}
-                onChange={(ev) => setGenForm((f) => ({ ...f, billType: ev.target.value }))}
-              >
-                {BILL_TYPE_OPTIONS.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </TextField>
               <TextField
                 label="Due date"
                 type="date"
@@ -277,8 +267,8 @@ export function FinanceBillsPage() {
                 required
               />
               <Typography variant="caption" color="text.secondary">
-                Creates one bill per occupied unit using its monthly charge. Duplicate bills for the same unit, type,
-                and due date are skipped.
+                Creates one maintenance bill per occupied unit using its monthly maintenance charge. Duplicate bills for
+                the same unit, type, and due date are skipped.
               </Typography>
             </Stack>
           </DialogContent>
@@ -309,7 +299,7 @@ export function FinanceBillsPage() {
         maxWidth="sm"
       >
         <form onSubmit={handleSingleCreate}>
-          <DialogTitle>Add bill for one unit</DialogTitle>
+          <DialogTitle>Add utility bill</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <DialogFormError error={dialogError} onClose={() => setDialogError(null)} />
@@ -323,19 +313,6 @@ export function FinanceBillsPage() {
                 {units.map((u) => (
                   <MenuItem key={u.id} value={u.id}>
                     {u.unitNumber} ({u.unitType})
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                select
-                required
-                label="Bill type"
-                value={singleForm.billType}
-                onChange={(ev) => setSingleForm((f) => ({ ...f, billType: ev.target.value }))}
-              >
-                {BILL_TYPE_OPTIONS.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value}>
-                    {opt.label}
                   </MenuItem>
                 ))}
               </TextField>

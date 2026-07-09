@@ -1,3 +1,4 @@
+// Shared MUI theme — colors, typography, and component defaults for the whole app.
 import { alpha, createTheme } from "@mui/material/styles";
 
 const PRIMARY = {

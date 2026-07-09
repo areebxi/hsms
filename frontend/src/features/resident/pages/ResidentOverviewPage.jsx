@@ -1,6 +1,11 @@
+/**
+ * Resident home screen with shortcuts to every resident feature:
+ * bills, notices, complaints, polls, guest approvals, SOS, and facility booking.
+ */
 import { Card, CardContent, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
+// Quick links shown as cards; each route opens a dedicated resident page.
 const LINKS = [
   {
     to: "/resident/bills",

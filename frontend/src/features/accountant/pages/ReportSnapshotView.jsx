@@ -1,3 +1,7 @@
+/**
+ * Renders a generated financial report snapshot. Each report type (Income, Expense,
+ * BalanceSheet, Defaulters) has its own layout; unknown types fall back to raw JSON.
+ */
 import {
   Box,
   Card,
@@ -41,6 +45,7 @@ function MetricCard({ label, value, emphasize }) {
   );
 }
 
+// Income report: total payments collected in the selected date range.
 function IncomeView({ data }) {
   const totalIncome = typeof data?.totalIncome === "number" ? data.totalIncome : 0;
   const paymentCount = typeof data?.paymentCount === "number" ? data.paymentCount : 0;
@@ -63,6 +68,7 @@ function IncomeView({ data }) {
   );
 }
 
+// Expense report: total society spending recorded in the ledger for the range.
 function ExpenseView({ data }) {
   const totalExpenses = typeof data?.totalExpenses === "number" ? data.totalExpenses : 0;
   const expenseCount = typeof data?.expenseCount === "number" ? data.expenseCount : 0;
@@ -85,6 +91,7 @@ function ExpenseView({ data }) {
   );
 }
 
+// Balance snapshot: income vs expenses for the period, net operating result, and unpaid bills.
 function BalanceSheetView({ data }) {
   const periodIncome = typeof data?.periodIncome === "number" ? data.periodIncome : 0;
   const periodExpenses = typeof data?.periodExpenses === "number" ? data.periodExpenses : 0;
@@ -145,6 +152,7 @@ function BalanceSheetView({ data }) {
   );
 }
 
+// Defaulters report: list of overdue unpaid bills as of the report date range.
 function DefaultersView({ data }) {
   const count = typeof data?.count === "number" ? data.count : 0;
   const bills = Array.isArray(data?.bills) ? data.bills : [];
@@ -190,6 +198,7 @@ function DefaultersView({ data }) {
   );
 }
 
+// Pick the right layout based on report type returned from the generate API.
 export function ReportSnapshotView({ reportType, data }) {
   if (data == null) {
     return (

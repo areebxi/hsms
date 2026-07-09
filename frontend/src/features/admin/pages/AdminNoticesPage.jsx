@@ -1,3 +1,7 @@
+/**
+ * Admin notice board. The admin can publish, edit, and delete notices that
+ * residents see on their notice board.
+ */
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -26,11 +30,14 @@ export function AdminNoticesPage() {
   const [error, setError] = useState(null);
   const [dialogError, setDialogError] = useState(null);
   const [open, setOpen] = useState(false);
+  // Fields for the publish-notice dialog.
   const [form, setForm] = useState({ title: "", description: "", priority: "" });
 
   const [editRow, setEditRow] = useState(null);
+  // Fields for editing an existing notice.
   const [editForm, setEditForm] = useState({ title: "", description: "", priority: "" });
 
+  // Fetch all notices from the API.
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -44,10 +51,12 @@ export function AdminNoticesPage() {
     }
   }, []);
 
+  // Load notices when the page mounts.
   useEffect(() => {
     load();
   }, [load]);
 
+  // Publish a new notice and refresh the list.
   async function handleCreate(e) {
     e.preventDefault();
     setDialogError(null);
@@ -65,6 +74,7 @@ export function AdminNoticesPage() {
     }
   }
 
+  // Open the edit dialog with the selected notice's data.
   function openEdit(n) {
     setDialogError(null);
     setEditRow(n);
@@ -75,6 +85,7 @@ export function AdminNoticesPage() {
     });
   }
 
+  // Save changes to an existing notice.
   async function handleEdit(e) {
     e.preventDefault();
     if (!editRow) return;
@@ -93,6 +104,7 @@ export function AdminNoticesPage() {
     }
   }
 
+  // Delete a notice after confirmation.
   async function handleDelete(id) {
     if (!window.confirm("Delete this notice?")) return;
     try {

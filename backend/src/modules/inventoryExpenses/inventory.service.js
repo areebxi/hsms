@@ -1,3 +1,6 @@
+/**
+ * Society inventory tracking — admin-managed assets and supplies.
+ */
 import mongoose from "mongoose";
 
 import { HttpError } from "../../lib/httpError.js";
@@ -24,6 +27,7 @@ function serializeInventory(doc, populated = false) {
   return out;
 }
 
+/** Searchable inventory list with optional category and free-text filter. */
 export async function listInventory(query) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -53,6 +57,7 @@ function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** New item — managedBy set to the creating admin for accountability. */
 export async function createInventory(body, managedByUserId) {
   const row = await Inventory.create({
     itemName: body.itemName,
@@ -75,6 +80,7 @@ export async function getInventory(itemId) {
   return serializeInventory(row, true);
 }
 
+/** Updates bump lastUpdated so auditors know when stock changed. */
 export async function patchInventory(itemId, body) {
   if (!mongoose.Types.ObjectId.isValid(itemId)) throw new HttpError(400, "Invalid item id");
   const updates = { ...body, lastUpdated: new Date() };

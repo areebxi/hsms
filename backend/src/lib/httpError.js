@@ -1,5 +1,6 @@
 /**
- * HTTP errors with status codes for consistent API responses (see errorHandler).
+ * Custom error type for expected API failures (4xx/5xx).
+ * Route handlers throw this; errorHandler turns it into JSON for the client.
  */
 export class HttpError extends Error {
   /**

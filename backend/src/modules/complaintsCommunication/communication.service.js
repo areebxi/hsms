@@ -1,3 +1,7 @@
+/**
+ * Complaints, notices, and polls business logic.
+ * Residents file complaints and vote; admins publish notices and manage complaint status.
+ */
 import crypto from "crypto";
 import mongoose from "mongoose";
 
@@ -8,6 +12,7 @@ import { Poll } from "../../models/Poll.js";
 import { Vote } from "../../models/Vote.js";
 import { getCurrentUnitIdsForUser } from "../billingPayments/billing.service.js";
 
+/** Human-readable ticket id for resident tracking (retries on rare collision). */
 function generateTicketId() {
   return `TKT-${crypto.randomBytes(5).toString("hex").toUpperCase()}`;
 }
@@ -82,6 +87,8 @@ function serializePoll(doc, populated = false) {
   return out;
 }
 
+// --- Notices (admin-authored, readable by all authenticated users) ---
+
 export async function listNotices(query) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -137,6 +144,8 @@ export async function deleteNotice(noticeId) {
   return { deleted: true };
 }
 
+// --- Complaints (residents submit; admins see all and update status) ---
+
 export async function listComplaints(query, auth) {
   const limit = query.limit ?? 50;
   const skip = query.skip ?? 0;
@@ -165,6 +174,7 @@ export async function listComplaints(query, auth) {
   };
 }
 
+/** Residents only — complaint must target one of the user's assigned units. */
 export async function createComplaint(body, auth) {
   if (auth.role !== "Resident") {
     throw new HttpError(403, "Only residents may submit complaints");
@@ -221,6 +231,7 @@ export async function getComplaint(complaintId, auth) {
   return serializeComplaint(complaint, true);
 }
 
+/** Admin workflow: move complaint through Pending → In Progress → Resolved. */
 export async function patchComplaintStatus(complaintId, body) {
   if (!mongoose.Types.ObjectId.isValid(complaintId)) {
     throw new HttpError(400, "Invalid complaint id");
@@ -237,6 +248,10 @@ export async function patchComplaintStatus(complaintId, body) {
   return serializeComplaint(complaint, true);
 }
 
+/**
+ * Delete complaint — admins can remove any; residents only their own Pending ones.
+ * Prevents residents from erasing complaints already being handled.
+ */
 export async function deleteComplaint(complaintId, auth) {
   if (!mongoose.Types.ObjectId.isValid(complaintId)) {
     throw new HttpError(400, "Invalid complaint id");
@@ -278,12 +293,15 @@ async function tallyVotes(pollId) {
   return tally;
 }
 
+/** Whether voting is allowed: poll Open and current time within start/end window. */
 function pollCanVote(poll, now = new Date()) {
   if (poll.status !== "Open") return false;
   const start = new Date(poll.startDate);
   const end = new Date(poll.endDate);
   return now >= start && now <= end;
 }
+
+// --- Polls & votes (admin creates; residents vote once per poll) ---
 
 export async function listPolls(query) {
   const limit = query.limit ?? 50;
@@ -327,6 +345,7 @@ export async function createPoll(body, createdByUserId) {
   return serializePoll(populated, true);
 }
 
+/** Poll detail with live tally, voting window, and the caller's vote if any. */
 export async function getPoll(pollId, auth) {
   if (!mongoose.Types.ObjectId.isValid(pollId)) {
     throw new HttpError(400, "Invalid poll id");
@@ -386,6 +405,7 @@ export async function deletePoll(pollId) {
   return { deleted: true };
 }
 
+/** One vote per resident — duplicate key triggers a friendly conflict error. */
 export async function castVote(body, auth) {
   if (auth.role !== "Resident") {
     throw new HttpError(403, "Only residents may vote");

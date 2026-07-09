@@ -1,3 +1,4 @@
+// Outermost page wrapper — full-height background and a centred content column.
 import { Box, Container } from "@mui/material";
 
 export function AppShell({ children }) {
