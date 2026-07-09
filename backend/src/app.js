@@ -10,7 +10,7 @@ import "./models/index.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
-import authRoutes from "./modules/auth/auth.routes.js";
+import authRoutes from "./modules/auth/routes.js";
 import membersUnitsRoutes from "./modules/membersUnits/routes.js";
 import billingPaymentsRoutes from "./modules/billingPayments/routes.js";
 import complaintsCommunicationRoutes from "./modules/complaintsCommunication/routes.js";

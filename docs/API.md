@@ -169,7 +169,7 @@ Set `TRUST_PROXY=1` when behind a reverse proxy so limits use the client IP.
 
 | Module | Routes file |
 |--------|-------------|
-| Auth | `backend/src/modules/auth/auth.routes.js` |
+| Auth | `backend/src/modules/auth/routes.js` |
 | Members & units | `backend/src/modules/membersUnits/routes.js` |
 | Billing | `backend/src/modules/billingPayments/routes.js` |
 | Communication | `backend/src/modules/complaintsCommunication/routes.js` |

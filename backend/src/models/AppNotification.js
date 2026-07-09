@@ -4,7 +4,7 @@
  */
 import mongoose from "mongoose";
 
-const appNotificationsSchema = new mongoose.Schema(
+const appNotificationSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,8 +22,8 @@ const appNotificationsSchema = new mongoose.Schema(
   { collection: "appNotifications", timestamps: true }
 );
 
-appNotificationsSchema.index({ userId: 1, read: 1, createdAt: -1 });
+appNotificationSchema.index({ userId: 1, read: 1, createdAt: -1 });
 
-export const AppNotifications =
-  mongoose.models.AppNotifications ||
-  mongoose.model("AppNotifications", appNotificationsSchema);
+export const AppNotification =
+  mongoose.models.AppNotification ||
+  mongoose.model("AppNotification", appNotificationSchema);
