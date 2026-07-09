@@ -27,7 +27,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 export function SecurityPatrolsPage() {
   const [routes, setRoutes] = useState([]);

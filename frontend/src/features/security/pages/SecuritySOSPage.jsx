@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 export function SecuritySOSPage() {
   const [items, setItems] = useState([]);

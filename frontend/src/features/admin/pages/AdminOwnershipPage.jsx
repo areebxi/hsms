@@ -27,7 +27,7 @@ import {
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 // Format a date for display in the ownership table.
 function formatDay(iso) {

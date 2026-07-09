@@ -20,7 +20,7 @@ import {
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { ReportSnapshotView } from "./ReportSnapshotView.jsx";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 function day(iso) {
   if (!iso) return "—";

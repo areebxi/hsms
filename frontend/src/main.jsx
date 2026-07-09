@@ -4,9 +4,9 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import App from "./App.jsx";
-import { theme } from "./theme.js";
+import { theme } from "./shared/theme/theme.js";
 
-// Drop a legacy theme key so everyone uses the single light theme from theme.js.
+// Drop a legacy theme key so everyone uses the single light theme from shared/theme/theme.js.
 try {
   localStorage.removeItem("hsms_theme_mode");
 } catch {

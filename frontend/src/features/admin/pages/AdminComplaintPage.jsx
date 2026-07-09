@@ -24,7 +24,7 @@ import {
 
 import { apiDelete, apiGet, apiPatch } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 const STATUSES = ["Pending", "In Progress", "Resolved"];
 

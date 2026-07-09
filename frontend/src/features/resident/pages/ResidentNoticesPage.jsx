@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 import { apiGet } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 // Pick chip colour from notice priority (high / medium / low).
 function priorityChipProps(priority) {

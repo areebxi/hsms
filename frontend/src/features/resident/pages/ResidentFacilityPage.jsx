@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 export function ResidentFacilityPage() {
   const [facilities, setFacilities] = useState([]);

@@ -194,7 +194,7 @@ hsms/
 ├── frontend/
 │   └── src/
 │       ├── features/         # admin, accountant, resident, security, auth
-│       └── shared/           # API client, layout, guards, constants
+│       └── shared/           # API client, auth, layout, theme, utils, constants
 └── docs/                     # SRS, design artifacts, test traceability
 ```
 
@@ -215,7 +215,7 @@ hsms/
 <details>
 <summary><strong>Frontend notes</strong></summary>
 
-- **Theme:** Light palette in `frontend/src/theme.js` (Inter typography). No dark mode toggle.
+- **Theme:** Light palette in `frontend/src/shared/theme/theme.js` (Inter typography). No dark mode toggle.
 - **Layout:** Authenticated portals use `PortalLayout` inside `AppShell`.
 - **Auth:** JWT in `localStorage` (`hsms_token`). Signed-in users are redirected to their role home.
 

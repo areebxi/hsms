@@ -31,7 +31,7 @@ import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { ROLES } from "../../../shared/constants/roles.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 // Format an ISO timestamp for display in the table.
 function formatDate(iso) {

@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 export function ResidentSOSPage() {
   const [items, setItems] = useState([]); // resident's past SOS alerts

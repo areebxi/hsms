@@ -185,3 +185,10 @@
 - **New:** **`docs/TEST_TRACEABILITY.md`** — TC-01…TC-23 ↔ UC, FR, API, UI (referenced in root README since Phase 8; file was missing).
 - **New:** **`docs/API.md`** — full REST reference for `/api/v1` endpoints and roles.
 - **Updated:** Root **`README.md`** — documentation table links to docs index and API reference.
+
+## 2026-07-09 — Frontend shared folder cleanup
+
+- **Moved:** `frontend/src/theme.js` → **`frontend/src/shared/theme/theme.js`**; **`main.jsx`** import updated.
+- **Moved:** `frontend/src/shared/formatCount.js` → **`frontend/src/shared/utils/formatCount.js`**; all feature-page imports updated.
+- **Removed:** Empty placeholder folders **`shared/ui/`** and **`shared/units/`**.
+- **Docs:** Root **`README.md`** — project structure and theme path aligned with new layout.

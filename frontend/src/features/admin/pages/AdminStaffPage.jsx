@@ -25,7 +25,7 @@ import { DialogFormError } from "../../../shared/components/DialogFormError.jsx"
 import { PhoneTextField } from "../../../shared/components/PhoneTextField.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { optionalPhoneFieldError, sanitizePkPhoneInput } from "../../../shared/validation/pkPhone.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 const ROLES = ["Maid", "Driver", "Vendor", "Other"];
 

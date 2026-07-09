@@ -24,7 +24,7 @@ import {
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { EXPENSE_CATEGORY_OPTIONS } from "../../../shared/constants/expenseCategories.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 function money(n) {
   return typeof n === "number"

@@ -28,7 +28,7 @@ import {
 
 import { apiGet, apiPost } from "../../../shared/api/client.js";
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 function money(n) {
   if (typeof n !== "number") return "—";

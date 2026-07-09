@@ -23,7 +23,7 @@ import {
 
 import { DialogFormError } from "../../../shared/components/DialogFormError.jsx";
 import { apiDelete, apiGet, apiPatch, apiPost } from "../../../shared/api/client.js";
-import { formatCount } from "../../../shared/formatCount.js";
+import { formatCount } from "../../../shared/utils/formatCount.js";
 
 const UNIT_TYPES = ["Apartment", "Villa", "Plot"];
 const OCCUPANCY = ["Occupied", "Vacant"];
