@@ -4,7 +4,7 @@
  */
 import mongoose from "mongoose";
 
-const pollSchema = new mongoose.Schema(
+const pollsSchema = new mongoose.Schema(
   {
     question: { type: String, required: true, trim: true },
     options: { type: [String], required: true },
@@ -26,5 +26,5 @@ const pollSchema = new mongoose.Schema(
   { collection: "polls" }
 );
 
-export const Poll =
-  mongoose.models.Poll || mongoose.model("Poll", pollSchema);
+export const Polls =
+  mongoose.models.Polls || mongoose.model("Polls", pollsSchema);

@@ -59,9 +59,9 @@ Maps acceptance test cases **TC-01 … TC-23** ([HSMS - Design Document - Test C
 ### TC-04 — Generate Bills (UC-04)
 
 - **API:** `POST /bills/generate` (bulk from occupied units × `monthlyCharges`); `POST /bills` (single).
-- **Notifications (FR-2a):** After create/generate, `billing.service.js` calls `sendNotification` with `channel: "app"` per resident on the unit (`notificationProvider.js` logs stub).
+- **Notifications (FR-2a):** After create/generate, `billing.service.js` calls `sendNotification` with `channel: "app"` per resident on the unit; `notificationProvider.js` persists to **`appNotifications`** via **`AppNotifications`** model.
 - **UI:** `FinanceBillsPage.jsx` — generate and list bills.
-- **Collections:** `bills`.
+- **Collections:** `bills`, `appNotifications`.
 
 ### TC-05 — Expense Tracking (UC-05)
 
@@ -136,7 +136,7 @@ Maps acceptance test cases **TC-01 … TC-23** ([HSMS - Design Document - Test C
 
 - **API:** `POST /votes` (one per resident per poll); `GET /polls/:pollId` returns tallies and `myVote`.
 - **UI:** `ResidentPollsPage.jsx`, `AdminPollsPage.jsx`.
-- **Collections:** `polls`, `votes`.
+- **Models / collections:** `Polls` → `polls`; `Vote` → `votes`.
 
 ### TC-18 — Log Visitor Entry (UC-18)
 

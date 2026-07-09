@@ -192,3 +192,10 @@
 - **Moved:** `frontend/src/shared/formatCount.js` → **`frontend/src/shared/utils/formatCount.js`**; all feature-page imports updated.
 - **Removed:** Empty placeholder folders **`shared/ui/`** and **`shared/units/`**.
 - **Docs:** Root **`README.md`** — project structure and theme path aligned with new layout.
+
+## 2026-07-09 — Backend model renames (`AppNotifications`, `Polls`)
+
+- **Renamed:** `backend/src/models/AppNotification.js` → **`AppNotifications.js`** — Mongoose model **`AppNotifications`**; MongoDB collection **`appNotifications`** (was `app_notifications`). Updated **`notificationProvider.js`**, **`billing.service.js`**, **`models/index.js`**.
+- **Renamed:** `backend/src/models/Poll.js` → **`Polls.js`** — Mongoose model **`Polls`**; collection name unchanged (`polls`). Updated **`communication.service.js`**, **`models/index.js`**, **`Vote.js`** (`ref: "Polls"`).
+- **Docs:** **`docs/plan.md`** §10.1 + schema summary; **`docs/HSMS - Design Document - Database Design.md`**; **`docs/TEST_TRACEABILITY.md`**; **`docs/README.md`**; root **`README.md`** — collection and model names aligned.
+- **DB migration (if needed):** `db.app_notifications.renameCollection("appNotifications")` when upgrading an existing database that already has the old collection name.

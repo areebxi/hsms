@@ -3,7 +3,7 @@
  */
 import mongoose from "mongoose";
 
-import { AppNotification } from "../models/AppNotification.js";
+import { AppNotifications } from "../models/AppNotifications.js";
 
 /**
  * In-app / email / SMS delivery abstraction.
@@ -29,7 +29,7 @@ export async function sendNotification({ channel, to, subject, body }) {
       event = body.event;
     }
 
-    await AppNotification.create({
+    await AppNotifications.create({
       userId: to,
       channel: "app",
       subject,

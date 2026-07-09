@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import { HttpError } from "../../lib/httpError.js";
 import { Complaint } from "../../models/Complaint.js";
 import { Notice } from "../../models/Notice.js";
-import { Poll } from "../../models/Poll.js";
+import { Polls } from "../../models/Polls.js";
 import { Vote } from "../../models/Vote.js";
 import { getCurrentUnitIdsForUser } from "../billingPayments/billing.service.js";
 
@@ -312,13 +312,13 @@ export async function listPolls(query) {
   }
 
   const [items, total] = await Promise.all([
-    Poll.find(filter)
+    Polls.find(filter)
       .populate("createdBy", "name email")
       .sort({ startDate: -1 })
       .skip(skip)
       .limit(limit)
       .lean(),
-    Poll.countDocuments(filter),
+    Polls.countDocuments(filter),
   ]);
 
   return {
@@ -333,7 +333,7 @@ export async function createPoll(body, createdByUserId) {
   if (new Date(body.endDate) < new Date(body.startDate)) {
     throw new HttpError(400, "endDate must be on or after startDate");
   }
-  const poll = await Poll.create({
+  const poll = await Polls.create({
     question: body.question,
     options: body.options,
     startDate: body.startDate,
@@ -341,7 +341,7 @@ export async function createPoll(body, createdByUserId) {
     status: "Open",
     createdBy: createdByUserId,
   });
-  const populated = await Poll.findById(poll._id).populate("createdBy", "name email").lean();
+  const populated = await Polls.findById(poll._id).populate("createdBy", "name email").lean();
   return serializePoll(populated, true);
 }
 
@@ -350,7 +350,7 @@ export async function getPoll(pollId, auth) {
   if (!mongoose.Types.ObjectId.isValid(pollId)) {
     throw new HttpError(400, "Invalid poll id");
   }
-  const poll = await Poll.findById(pollId).populate("createdBy", "name email").lean();
+  const poll = await Polls.findById(pollId).populate("createdBy", "name email").lean();
   if (!poll) throw new HttpError(404, "Poll not found");
 
   const tally = await tallyVotes(poll._id);
@@ -387,7 +387,7 @@ export async function patchPoll(pollId, body) {
   if (body.startDate && body.endDate && new Date(body.endDate) < new Date(body.startDate)) {
     throw new HttpError(400, "endDate must be on or after startDate");
   }
-  const poll = await Poll.findByIdAndUpdate(pollId, { $set: body }, { new: true })
+  const poll = await Polls.findByIdAndUpdate(pollId, { $set: body }, { new: true })
     .populate("createdBy", "name email")
     .lean();
   if (!poll) throw new HttpError(404, "Poll not found");
@@ -400,7 +400,7 @@ export async function deletePoll(pollId) {
   }
   const oid = new mongoose.Types.ObjectId(pollId);
   await Vote.deleteMany({ pollId: oid });
-  const deleted = await Poll.findByIdAndDelete(pollId);
+  const deleted = await Polls.findByIdAndDelete(pollId);
   if (!deleted) throw new HttpError(404, "Poll not found");
   return { deleted: true };
 }
@@ -411,7 +411,7 @@ export async function castVote(body, auth) {
     throw new HttpError(403, "Only residents may vote");
   }
 
-  const poll = await Poll.findById(body.pollId);
+  const poll = await Polls.findById(body.pollId);
   if (!poll) throw new HttpError(404, "Poll not found");
 
   if (!pollCanVote(poll)) {

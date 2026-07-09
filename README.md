@@ -253,7 +253,7 @@ Key variables in `backend/.env` (see [`backend/.env.example`](backend/.env.examp
 <details>
 <summary><strong>Notifications (bills)</strong></summary>
 
-When a bill is created or bulk-generated, the backend calls `sendNotification` with `channel: "app"` for each resident on that unit. The current provider is a console stub in [`backend/src/integrations/notificationProvider.js`](backend/src/integrations/notificationProvider.js) — swap for push or an in-app inbox when deploying.
+When a bill is created or bulk-generated, the backend calls `sendNotification` with `channel: "app"` for each resident on that unit. The app channel persists rows to the **`appNotifications`** collection via the **`AppNotifications`** model ([`backend/src/models/AppNotifications.js`](backend/src/models/AppNotifications.js)). Email/SMS remain console stubs in [`backend/src/integrations/notificationProvider.js`](backend/src/integrations/notificationProvider.js) — swap for push or external providers when deploying.
 
 </details>
 

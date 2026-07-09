@@ -48,6 +48,8 @@ VOTES: voteId (PK), pollId (FK), votedBy (FK), selectedOption
 
 Constraint: Unique pollId + votedBy
 
+APP_NOTIFICATIONS: notificationId (PK), userId (FK), channel, subject, event, payload (JSON), read, createdAt
+
 ### 7. SECURITY & VISITORS
 
 VISITORS: visitorId (PK), name, phone, idProofType, idProofNumber
@@ -90,7 +92,7 @@ INVENTORY: itemId (PK), itemName, quantity, condition, purchaseDate, lastUpdated
 
 users, units, ownershipRecords, bills, payments, expenses, financialReports, complaints, notices,
 
-polls, votes, visitors, guestApprovals, visitorLogs, gateAccessLogs, patrolLogs, staff, staffAttendance,
+polls, votes, appNotifications, visitors, guestApprovals, visitorLogs, gateAccessLogs, patrolLogs, staff, staffAttendance,
 
 sosAlerts, sosResponses, facilities, facilityBookings, inventory
 

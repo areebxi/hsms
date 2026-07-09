@@ -244,7 +244,7 @@ This yields **consistent, testable units** that map directly to SRS use cases an
 
 ### 10.1 Collection Names (authoritative)
 
-`users`, `units`, `ownershipRecords`, `bills`, `payments`, `expenses`, `financialReports`, `complaints`, `notices`, `polls`, `votes`, `visitors`, `guestApprovals`, `visitorLogs`, `gateAccessLogs`, `patrolLogs`, `staff`, `staffAttendance`, `sosAlerts`, `sosResponses`, `facilities`, `facilityBookings`, `inventory`
+`users`, `units`, `ownershipRecords`, `bills`, `payments`, `expenses`, `financialReports`, `complaints`, `notices`, `polls`, `votes`, `appNotifications`, `visitors`, `guestApprovals`, `visitorLogs`, `gateAccessLogs`, `patrolLogs`, `staff`, `staffAttendance`, `sosAlerts`, `sosResponses`, `facilities`, `facilityBookings`, `inventory`
 
 ### 10.2 Schema Summary (from Database Design + ERD reconciliation)
 
@@ -272,6 +272,8 @@ This yields **consistent, testable units** that map directly to SRS use cases an
 *ERD adds `createdBy` — **include** (Admin reference).
 
 **Votes** — `voteId`, `pollId`, `votedBy`, `selectedOption`. **Unique compound index:** (`pollId`, `votedBy`).
+
+**AppNotifications** — `notificationId`, `userId`, `channel` (default `app`), `subject`, `event`, `payload` (JSON), `read`, `createdAt`. Persisted when `sendNotification` uses `channel: "app"` (see `notificationProvider.js`). Mongoose model: `AppNotifications.js`.
 
 **Visitors** — `visitorId`, name, phone, `idProofType`, `idProofNumber`.
 
@@ -321,7 +323,7 @@ This yields **consistent, testable units** that map directly to SRS use cases an
 
 Abstract **User** with role subclasses is a **logical** model; implementation typically uses a single `users` collection with `role` field + **policy functions** per module (`canPublishNotice(user)`, etc.).
 
-Key entities: `Unit`, `OwnershipRecord`, `Bill`, `Payment`, `Expense`, `FinancialReport`, `Notice`, `Complaint`, `Poll`, `Vote`, `Visitor`, `VisitorLog`, `GuestApproval`, `Staff`, `StaffAttendance`, `GateAccessLog`, `SOSAlert`, `SOSResponse`, `PatrolLog`, `Facility`, `FacilityBooking`, `Inventory`.
+Key entities: `Unit`, `OwnershipRecord`, `Bill`, `Payment`, `Expense`, `FinancialReport`, `Notice`, `Complaint`, `Polls`, `Vote`, `AppNotifications`, `Visitor`, `VisitorLog`, `GuestApproval`, `Staff`, `StaffAttendance`, `GateAccessLog`, `SOSAlert`, `SOSResponse`, `PatrolLog`, `Facility`, `FacilityBooking`, `Inventory`.
 
 **Included use cases in behavior:** `calculateCharges` (billing service), `processDummyPayment` (payment service), `triggerAlert` / `notifySecurityGuard` (SOS pipeline).
 
@@ -410,7 +412,7 @@ These keep one coherent model across all `HSMS - *.md` specification sources:
 4. **StaffAttendance:** ERD **`date`** — **retain** for daily reporting.
 5. **Bill vs Payment:** ERD states at most one payment record per bill for the modeled flow; partial payments are out of scope unless requirements change.
 6. **Inventory:** Merge class diagram `status` with DB `condition`/quantity as separate fields—both allowed.
-7. **Notifications:** Implement a **provider interface**; FYP uses simulated delivery while preserving FR-2a behavior in UX (show “notification queued/sent”).
+7. **Notifications:** Implement a **provider interface**; FYP uses simulated delivery while preserving FR-2a behavior in UX (show “notification queued/sent”). App-channel delivery persists to **`appNotifications`** via model **`AppNotifications`** (`backend/src/models/AppNotifications.js`).
 
 ---
 

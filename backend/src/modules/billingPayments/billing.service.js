@@ -12,7 +12,7 @@ import { Payment } from "../../models/Payment.js";
 import { User } from "../../models/User.js";
 import { Unit } from "../../models/Unit.js";
 import { OwnershipRecord } from "../../models/OwnershipRecord.js";
-import { AppNotification } from "../../models/AppNotification.js";
+import { AppNotifications } from "../../models/AppNotifications.js";
 
 function startOfToday() {
   const d = new Date();
@@ -80,7 +80,7 @@ function serializePayment(doc, populated = false) {
 }
 
 /**
- * FR-2a: notify current residents when a bill is issued (`channel: app`; persisted as AppNotification).
+ * FR-2a: notify current residents when a bill is issued (`channel: app`; persisted as AppNotifications).
  */
 async function notifyResidentsNewBill(billSerialized) {
   if (!billSerialized?.unitId) return;
@@ -443,8 +443,8 @@ export async function listNotifications(query, auth) {
   }
 
   const [items, total] = await Promise.all([
-    AppNotification.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-    AppNotification.countDocuments(filter),
+    AppNotifications.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    AppNotifications.countDocuments(filter),
   ]);
 
   return {
@@ -464,7 +464,7 @@ export async function markNotificationRead(notificationId, auth) {
     throw new HttpError(400, "Invalid notification id");
   }
 
-  const row = await AppNotification.findOne({
+  const row = await AppNotifications.findOne({
     _id: notificationId,
     userId: auth.userId,
   });

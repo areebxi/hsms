@@ -8,7 +8,7 @@ const voteSchema = new mongoose.Schema(
   {
     pollId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Poll",
+      ref: "Polls",
       required: true,
     },
     votedBy: {
